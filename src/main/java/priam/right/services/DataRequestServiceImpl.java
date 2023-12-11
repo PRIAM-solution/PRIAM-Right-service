@@ -226,11 +226,10 @@ public class DataRequestServiceImpl implements DataRequestService {
     public DataRequestResponseDTO RectificationAnswer(int idDataRequest, boolean answer, String claimAnswer){
         //Code redondant, de la fonction getDataRequest (pas même type de retour
         DataRequest dataRequest = dataRequestRepository.getById(idDataRequest);
-        Data data = dataRestClient.getData(dataRequest.getDataId());
-        DataSubject dataSubject = dataSubjectRestClient.getDataSubject(dataRequest.getDataSubjectId());
-        dataRequest.setData(data);
-        dataRequest.setDataSubject(dataSubject);
+        ArrayList<Data> datas = new ArrayList<>();
 
+        DataSubject dataSubject = dataSubjectRestClient.getDataSubject(dataRequest.getDataSubjectId());
+        dataRequest.setDataSubject(dataSubject);
         dataRequest.setResponse(true);
 
         RequestAnswer rectificationAnswer = new RequestAnswer();
@@ -242,27 +241,35 @@ public class DataRequestServiceImpl implements DataRequestService {
             rectificationAnswer.setClaimDate(new Date());
             requestAnswerRepository.save(rectificationAnswer);
 
-            String dataTypeName= data.getData_type_name();
-            String primaryKeyName= data.getPrimary_key_name();
-            String primaryKeyValue= dataRequest.getPrimaryKeyValue();
-            String attribute = data.getAttribute();
-            String newValue= dataRequest.getNewValue();
+            // Get all Data object
+            List<Integer> dataIds = new ArrayList<>();
+            dataIds = dataRequestDataRepository.findDataIdsByDataRequestId(dataRequest.getId());
+            dataIds.forEach(dataId -> {
+                Data data = dataRestClient.getData(dataId);
+                datas.add(data);
 
-            int dsId = Integer.parseInt(dataRequest.getDataSubject().getIdRef());
+                String dataTypeName= data.getData_type_name();
+                String primaryKeyName= data.getPrimary_key_name();
+                String primaryKeyValue= dataRequest.getPrimaryKeyValue();
+                String attribute = data.getAttribute();
+                String newValue= dataRequest.getNewValue();
 
-            List<Map<String, String>> parameters = new ArrayList<>();
+                String dsId = dataRequest.getDataSubject().getIdRef();
 
-            Map<String, String> parameter = new HashMap<>();
-            parameter.put("attribute", attribute);
-            parameter.put("newValue", newValue);
-            parameter.put("dsId", String.valueOf(dsId));
-            parameter.put("dataTypeName", dataTypeName);
-            parameter.put("primaryKeyName", primaryKeyName);
-            parameter.put("primaryKeyValue", primaryKeyValue);
+                List<Map<String, String>> parameters = new ArrayList<>();
 
-            parameters.add(parameter);
+                Map<String, String> parameter = new HashMap<>();
+                parameter.put("attribute", attribute);
+                parameter.put("newValue", newValue);
+                parameter.put("dsId", dsId);
+                parameter.put("dataTypeName", dataTypeName);
+                parameter.put("primaryKeyName", primaryKeyName);
+                parameter.put("primaryKeyValue", primaryKeyValue);
 
-            providerViewRestClient.rectification(parameters);
+                parameters.add(parameter);
+
+                providerViewRestClient.rectification(parameters);
+            });
 
         }else{
             rectificationAnswer.setAnswer(false);
@@ -272,17 +279,19 @@ public class DataRequestServiceImpl implements DataRequestService {
             requestAnswerRepository.save(rectificationAnswer);
         }
         dataRequest.setIsolated(false);
-        return dataRequestMapper.fromDataRequest(dataRequest);
+
+        // Response DTO
+        DataRequestResponseDTO response = new DataRequestResponseDTO(dataRequest, datas);
+        return response;
     }
 
     @Override
     public DataRequestResponseDTO ErasureAnswer(int idDataRequest, boolean answer, String claimAnswer){
         DataRequest dataRequest = dataRequestRepository.getById(idDataRequest);
-        Data data = dataRestClient.getData(dataRequest.getDataId());
-        DataSubject dataSubject = dataSubjectRestClient.getDataSubject(dataRequest.getDataSubjectId());
-        dataRequest.setData(data);
-        dataRequest.setDataSubject(dataSubject);
+        ArrayList<Data> datas = new ArrayList<>();
 
+        DataSubject dataSubject = dataSubjectRestClient.getDataSubject(dataRequest.getDataSubjectId());
+        dataRequest.setDataSubject(dataSubject);
         dataRequest.setResponse(true);
 
         RequestAnswer erasureAnswer = new RequestAnswer();
@@ -294,26 +303,34 @@ public class DataRequestServiceImpl implements DataRequestService {
             erasureAnswer.setClaimDate(new Date());
             requestAnswerRepository.save(erasureAnswer);
 
-            String dataTypeName= data.getData_type_name();
-            String primaryKeyName= data.getPrimary_key_name();
-            String primaryKeyValue= dataRequest.getPrimaryKeyValue();
-            String attribute = data.getAttribute();
+            // Get all Data object
+            List<Integer> dataIds = new ArrayList<>();
+            dataIds = dataRequestDataRepository.findDataIdsByDataRequestId(dataRequest.getId());
+            dataIds.forEach(dataId -> {
+                Data data = dataRestClient.getData(dataId);
+                datas.add(data);
 
-            // Bah non pas en entier tu fais quoi si c'est un email l'idref du con ?
-            int dsId = Integer.parseInt(dataRequest.getDataSubject().getIdRef())/*getId()*/;
+                String dataTypeName= data.getData_type_name();
+                String primaryKeyName= data.getPrimary_key_name();
+                String primaryKeyValue= dataRequest.getPrimaryKeyValue();
+                String attribute = data.getAttribute();
 
-            List<Map<String, String>> parameters = new ArrayList<>();
 
-            Map<String, String> parameter = new HashMap<>();
-            parameter.put("attribute", attribute);
-            parameter.put("dsId", String.valueOf(dsId));
-            parameter.put("dataTypeName", dataTypeName);
-            parameter.put("primaryKeyName", primaryKeyName);
-            parameter.put("primaryKeyValue", primaryKeyValue);
+                String dsId = dataRequest.getDataSubject().getIdRef()/*getId()*/;
 
-            parameters.add(parameter);
+                List<Map<String, String>> parameters = new ArrayList<>();
 
-            providerViewRestClient.forgotten(parameters);
+                Map<String, String> parameter = new HashMap<>();
+                parameter.put("attribute", attribute);
+                parameter.put("dsId", dsId);
+                parameter.put("dataTypeName", dataTypeName);
+                parameter.put("primaryKeyName", primaryKeyName);
+                parameter.put("primaryKeyValue", primaryKeyValue);
+
+                parameters.add(parameter);
+
+                providerViewRestClient.forgotten(parameters);
+            });
 
         }else{
             erasureAnswer.setAnswer(false);
@@ -323,7 +340,10 @@ public class DataRequestServiceImpl implements DataRequestService {
             requestAnswerRepository.save(erasureAnswer);
         }
         dataRequest.setIsolated(false);
-        return dataRequestMapper.fromDataRequest(dataRequest);
+
+        // Response DTO
+        DataRequestResponseDTO response = new DataRequestResponseDTO(dataRequest, datas);
+        return response;
     }
 
     @Override
