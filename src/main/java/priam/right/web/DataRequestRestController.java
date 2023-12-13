@@ -1,10 +1,7 @@
 package priam.right.web;
 
 import org.springframework.web.bind.annotation.*;
-import priam.right.dto.AccessRequestRequestDTO;
-import priam.right.dto.DataRequestRequestDTO;
-import priam.right.dto.DataRequestResponseDTO;
-import priam.right.dto.RequestAnswerRequestDTO;
+import priam.right.dto.*;
 import priam.right.services.DataRequestService;
 
 import java.util.List;
@@ -70,5 +67,10 @@ public class DataRequestRestController {
     @PostMapping(path = "/right/recordAccessRequest")
     public void recordAccessRequest(@RequestBody AccessRequestRequestDTO accessRequestRequestDTO) {
         dataRequestService.saveAccessRequest(accessRequestRequestDTO.getIdRef(), accessRequestRequestDTO.getClaim(), accessRequestRequestDTO.getListOfSelectedDataId());
+    }
+
+    @GetMapping(path = "/isAccepted")
+    public boolean isDataRequestAcceptedForDataId(@RequestBody IsAcceptedDTO isAcceptedDTO) {
+        return dataRequestService.isAccepted(isAcceptedDTO.getDataSubjectId(), isAcceptedDTO.getDataid());
     }
 }

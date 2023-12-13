@@ -27,4 +27,5 @@ public interface DataRequestService {
 
     void saveAccessRequest(String idRef, String claim, ArrayList<Integer> listOfSelectedDataId);
 
+    boolean isAccepted(int dataSubjectId, int dataId);
 }

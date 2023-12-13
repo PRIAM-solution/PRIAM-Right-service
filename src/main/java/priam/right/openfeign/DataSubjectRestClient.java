@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import priam.right.entities.DataSubject;
 
-@FeignClient(name = "DATA-SUBJECT-SERVICE")
+@FeignClient(name = "ACTOR-SERVICE")
 public interface DataSubjectRestClient {
 
     @GetMapping(path = "/api/DataSubject/{id}")

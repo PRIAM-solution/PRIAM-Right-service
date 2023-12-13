@@ -371,5 +371,10 @@ public class DataRequestServiceImpl implements DataRequestService {
             dataRequestDataRepository.save(drd);
         });
     }
+
+    @Override
+    public boolean isAccepted(int dataSubjectId, int dataId) {
+        return dataRequestDataRepository.isDataAcceptedByDataSubjectIdAndDataId(dataSubjectId, dataId);
+    }
 }
 
