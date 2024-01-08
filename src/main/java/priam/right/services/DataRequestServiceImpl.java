@@ -16,7 +16,6 @@ import priam.right.repositories.RequestAnswerRepository;
 import javax.annotation.Generated;
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Generated(
         value = "org.mapstruct.ap.MappingProcessor",
@@ -354,7 +353,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         dataRequest.setDataSubject(dataSubject);
         dataRequest.setClaimDate(new Date());
         dataRequest.setClaim(claim);
-        dataRequest.setType(TypeDataRequest.Knoweldge);
+        dataRequest.setType(TypeDataRequest.Knowledge);
 
         dataRequest.setResponse(false);
         dataRequest.setIsolated(true);
