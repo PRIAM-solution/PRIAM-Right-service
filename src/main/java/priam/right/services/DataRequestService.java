@@ -2,6 +2,8 @@ package priam.right.services;
 
 
 import priam.right.dto.DataRequestResponseDTO;
+import priam.right.dto.RequestListDTO;
+import priam.right.enums.TypeDataRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,7 @@ public interface DataRequestService {
 
     DataRequestResponseDTO getDataRequest(int id);
 
-    List<DataRequestResponseDTO> getListDataRequest(int id);
+    List<DataRequestResponseDTO> getListDataRequestByDataSubjectId(int id);
 
     DataRequestResponseDTO saveRectificationRequest(String attribute, String newValue, String patientIdRef, String claim, String primaryKeyValue);
 
@@ -28,4 +30,6 @@ public interface DataRequestService {
     void saveAccessRequest(String idRef, String claim, ArrayList<Integer> listOfSelectedDataId);
 
     boolean isAccepted(int dataSubjectId, int dataId);
+
+    List<RequestListDTO> getDataRequestByFilters(List<String> listOfSelectedTypeDataRequests, List<String> listOfSelectedStatus, List<String> listOfSelectedDataSubjectCategories);
 }
