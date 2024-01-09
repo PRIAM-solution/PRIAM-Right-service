@@ -63,14 +63,19 @@ public class DataRequestRestController {
         System.out.println("recupération c bn "+idDS+dataTypeName+attributes);
         return dataRequestService.DataAccess(idDS,dataTypeName,attributes);
     }
+    @PostMapping(path = "/isAccepted")
+    public boolean isDataRequestAcceptedForDataId(@RequestBody IsAcceptedDTO isAcceptedDTO) {
+        try {
+            return dataRequestService.isAccepted(isAcceptedDTO.getDataSubjectId(), isAcceptedDTO.getDataid());
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
 
     @PostMapping(path = "/right/recordAccessRequest")
     public void recordAccessRequest(@RequestBody AccessRequestRequestDTO accessRequestRequestDTO) {
         dataRequestService.saveAccessRequest(accessRequestRequestDTO.getIdRef(), accessRequestRequestDTO.getClaim(), accessRequestRequestDTO.getListOfSelectedDataId());
     }
 
-    @GetMapping(path = "/isAccepted")
-    public boolean isDataRequestAcceptedForDataId(@RequestBody IsAcceptedDTO isAcceptedDTO) {
-        return dataRequestService.isAccepted(isAcceptedDTO.getDataSubjectId(), isAcceptedDTO.getDataid());
-    }
 }
