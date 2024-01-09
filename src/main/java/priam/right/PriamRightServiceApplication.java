@@ -11,10 +11,10 @@ import priam.right.services.DataRequestService;
 @SpringBootApplication
 @Configuration
 @EnableFeignClients
-public class RightApplication {
+public class PriamRightServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RightApplication.class, args);
+        SpringApplication.run(PriamRightServiceApplication.class, args);
     }
 
     @Bean

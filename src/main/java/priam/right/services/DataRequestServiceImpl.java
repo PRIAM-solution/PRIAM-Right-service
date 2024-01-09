@@ -6,9 +6,9 @@ import priam.right.entities.*;
 import priam.right.enums.TypeDataRequest;
 import priam.right.mappers.DataRequestMapper;
 import priam.right.openfeign.DataRestClient;
-import priam.right.openfeign.DataSubjectRestClient;
+import priam.right.openfeign.ActorRestClient;
 
-import priam.right.openfeign.ProviderViewRestClient;
+import priam.right.openfeign.ProviderRestClient;
 import priam.right.repositories.DataRequestDataRepository;
 import priam.right.repositories.DataRequestRepository;
 import priam.right.repositories.RequestAnswerRepository;
@@ -28,26 +28,26 @@ public class DataRequestServiceImpl implements DataRequestService {
     private DataRequestRepository dataRequestRepository;
     private DataRequestMapper dataRequestMapper;
     private DataRestClient dataRestClient;
-    private DataSubjectRestClient dataSubjectRestClient;
-    private ProviderViewRestClient providerViewRestClient;
+    private ActorRestClient actorRestClient;
+    private ProviderRestClient providerRestClient;
     private RequestAnswerRepository requestAnswerRepository;
     private DataRequestDataRepository dataRequestDataRepository;
 
     public DataRequestServiceImpl(DataRequestRepository dataRequestRepository, DataRequestMapper dataRequestMapper,
-                                  ProviderViewRestClient providerViewRestClient, DataRestClient dataRestClient, DataSubjectRestClient dataSubjectRestClient, RequestAnswerRepository requestAnswerRepository,
+                                  ProviderRestClient providerRestClient, DataRestClient dataRestClient, ActorRestClient actorRestClient, RequestAnswerRepository requestAnswerRepository,
                                   DataRequestDataRepository dataRequestDataRepository) {
         this.dataRequestRepository = dataRequestRepository;
         this.dataRequestMapper = dataRequestMapper;
         this.dataRestClient = dataRestClient;
-        this.dataSubjectRestClient = dataSubjectRestClient;
-        this.providerViewRestClient = providerViewRestClient;
+        this.actorRestClient = actorRestClient;
+        this.providerRestClient = providerRestClient;
         this.requestAnswerRepository = requestAnswerRepository;
         this.dataRequestDataRepository = dataRequestDataRepository;
     }
 
     public List<Map<String, String>> DataAccess(int idDS, String dataTypeName, List<String> attributes){
-        System.out.println(providerViewRestClient.getPersonalDataValues(idDS, dataTypeName, attributes));
-        return providerViewRestClient.getPersonalDataValues(idDS, dataTypeName, attributes);
+        System.out.println(providerRestClient.getPersonalDataValues(idDS, dataTypeName, attributes));
+        return providerRestClient.getPersonalDataValues(idDS, dataTypeName, attributes);
     }
     @Override
     public DataRequestResponseDTO saveRectificationRequest(String idRef,String attribute, String newValue,  String claim, String primaryKeyaValue) {
@@ -59,7 +59,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         int idd = dataRestClient.getIdByName(attribute);
         Data data = dataRestClient.getData(idd);
 
-        DataSubject dataSubject = dataSubjectRestClient.getDataSubjectByRef(idRef);
+        DataSubject dataSubject = actorRestClient.getDataSubjectByRef(idRef);
         dataRequest.setDataSubject(dataSubject);
 
         dataRequest.setClaimDate(new Date());
@@ -97,7 +97,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         int idd = dataRestClient.getIdByName(attribute);
         Data data = dataRestClient.getData(idd);
 
-        DataSubject dataSubject2 = dataSubjectRestClient.getDataSubjectByRef(idRef);
+        DataSubject dataSubject2 = actorRestClient.getDataSubjectByRef(idRef);
         dataRequest.setDataSubject(dataSubject2);
 
         dataRequest.setClaimDate(new Date());
@@ -139,7 +139,7 @@ public class DataRequestServiceImpl implements DataRequestService {
             datas.add(data);
         });
 
-        DataSubject dataSubject = dataSubjectRestClient.getDataSubject(dataRequest.getDataSubjectId());
+        DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
         dataRequest.setDataSubject(dataSubject);
 
         // Response DTO
@@ -163,7 +163,7 @@ public class DataRequestServiceImpl implements DataRequestService {
                 datas.add(data);
             });
 
-            DataSubject dataSubject = dataSubjectRestClient.getDataSubject(dataRequest.getDataSubjectId());
+            DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
             dataRequest.setDataSubject(dataSubject);
             response.add(new DataRequestResponseDTO(dataRequest, datas));
         }
@@ -188,7 +188,7 @@ public class DataRequestServiceImpl implements DataRequestService {
                 datas.add(data);
             });
 
-            DataSubject dataSubject = dataSubjectRestClient.getDataSubject(dataRequest.getDataSubjectId());
+            DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
             dataRequest.setDataSubject(dataSubject);
             response.add(new DataRequestResponseDTO(dataRequest, datas));
 
@@ -213,7 +213,7 @@ public class DataRequestServiceImpl implements DataRequestService {
                 datas.add(data);
             });
 
-            DataSubject dataSubject1 = dataSubjectRestClient.getDataSubject(dataRequest.getDataSubjectId());
+            DataSubject dataSubject1 = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
             dataRequest.setDataSubject(dataSubject1);
             response.add(new DataRequestResponseDTO(dataRequest, datas));
 
@@ -227,7 +227,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         DataRequest dataRequest = dataRequestRepository.getById(idDataRequest);
         ArrayList<Data> datas = new ArrayList<>();
 
-        DataSubject dataSubject = dataSubjectRestClient.getDataSubject(dataRequest.getDataSubjectId());
+        DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
         dataRequest.setDataSubject(dataSubject);
         dataRequest.setResponse(true);
 
@@ -267,7 +267,7 @@ public class DataRequestServiceImpl implements DataRequestService {
 
                 parameters.add(parameter);
 
-                providerViewRestClient.rectification(parameters);
+                providerRestClient.rectification(parameters);
             });
 
         }else{
@@ -289,7 +289,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         DataRequest dataRequest = dataRequestRepository.getById(idDataRequest);
         ArrayList<Data> datas = new ArrayList<>();
 
-        DataSubject dataSubject = dataSubjectRestClient.getDataSubject(dataRequest.getDataSubjectId());
+        DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
         dataRequest.setDataSubject(dataSubject);
         dataRequest.setResponse(true);
 
@@ -328,7 +328,7 @@ public class DataRequestServiceImpl implements DataRequestService {
 
                 parameters.add(parameter);
 
-                providerViewRestClient.forgotten(parameters);
+                providerRestClient.forgotten(parameters);
             });
 
         }else{
@@ -348,7 +348,7 @@ public class DataRequestServiceImpl implements DataRequestService {
     @Override
     public void saveAccessRequest(String idRef, String claim, ArrayList<Integer> listOfSelectedDataId) {
         DataRequest dataRequest = new DataRequest();
-        DataSubject dataSubject = dataSubjectRestClient.getDataSubjectByRef(idRef);
+        DataSubject dataSubject = actorRestClient.getDataSubjectByRef(idRef);
 
         dataRequest.setDataSubject(dataSubject);
         dataRequest.setClaimDate(new Date());
