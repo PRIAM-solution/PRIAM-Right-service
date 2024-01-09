@@ -2,8 +2,10 @@ package priam.right.web;
 
 import org.springframework.web.bind.annotation.*;
 import priam.right.dto.*;
+import priam.right.enums.TypeDataRequest;
 import priam.right.services.DataRequestService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +57,7 @@ public class DataRequestRestController {
 
     @GetMapping(path = "/requestsRectification/{id}")
     public List<DataRequestResponseDTO> getListDataRequestByDataSubject(@PathVariable(name = "id") int dataSubjectId) {
-        return dataRequestService.getListDataRequest(dataSubjectId);
+        return dataRequestService.getListDataRequestByDataSubjectId(dataSubjectId);
     }
 
     @GetMapping(path = "/personalDataValues/accessRight")
@@ -78,4 +80,8 @@ public class DataRequestRestController {
         dataRequestService.saveAccessRequest(accessRequestRequestDTO.getIdRef(), accessRequestRequestDTO.getClaim(), accessRequestRequestDTO.getListOfSelectedDataId());
     }
 
+    @GetMapping(path = "right/requestList")
+    public List<RequestListDTO> getRequestList(@RequestParam List<String> listOfSelectedTypeDataRequests, @RequestParam List<String> listOfSelectedStatus, @RequestParam List<String> listOfSelectedDataSubjectCategories) {
+        return dataRequestService.getDataRequestByFilters(listOfSelectedTypeDataRequests, listOfSelectedStatus, listOfSelectedDataSubjectCategories);
+    }
 }

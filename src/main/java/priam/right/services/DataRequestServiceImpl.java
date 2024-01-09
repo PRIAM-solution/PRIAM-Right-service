@@ -1,7 +1,10 @@
 package priam.right.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+import priam.right.dto.DSCategoryResponseDTO;
 import priam.right.dto.DataRequestResponseDTO;
+import priam.right.dto.RequestListDTO;
 import priam.right.entities.*;
 import priam.right.enums.TypeDataRequest;
 import priam.right.mappers.DataRequestMapper;
@@ -148,7 +151,7 @@ public class DataRequestServiceImpl implements DataRequestService {
     }
 
     @Override
-    public List<DataRequestResponseDTO> getListDataRequest(int dataSubjectId) {
+    public List<DataRequestResponseDTO> getListDataRequestByDataSubjectId(int dataSubjectId) {
         List<DataRequestResponseDTO> response = new ArrayList<>();
         List<DataRequest> dataRequestList = dataRequestRepository.findByDataSubjectId(dataSubjectId);
 
@@ -374,6 +377,37 @@ public class DataRequestServiceImpl implements DataRequestService {
     @Override
     public boolean isAccepted(int dataSubjectId, int dataId) {
         return dataRequestDataRepository.isDataAcceptedByDataSubjectIdAndDataId(dataSubjectId, dataId);
+    }
+
+    @Override
+    public List<RequestListDTO> getDataRequestByFilters(List<String> listOfSelectedTypeDataRequests, List<String> listOfSelectedStatus, List<String> listOfSelectedDataSubjectCategories) {
+        List<RequestListDTO> response = new ArrayList<>();
+        List<DataRequest> filteredList= new ArrayList<>();
+        if(listOfSelectedTypeDataRequests.isEmpty()) {
+            filteredList = dataRequestRepository.findAll();
+        }
+        else {
+            filteredList = dataRequestRepository.findByTypes(listOfSelectedTypeDataRequests);
+        }
+
+        filteredList.forEach(dataRequest -> {
+            DSCategoryResponseDTO category = actorRestClient.getDSCategoryById(dataRequest.getDataSubjectId());
+            RequestListDTO r = new RequestListDTO();
+            r.setRequestId(dataRequest.getId());
+            r.setResponse(dataRequest.isResponse());
+            r.setTypeRequest(dataRequest.getType());
+            r.setIssuedAt(dataRequest.getClaimDate());
+            r.setDataSubjectCategory(category.getDscName());
+            
+            if(listOfSelectedDataSubjectCategories.isEmpty()) {
+                response.add(r);
+            }
+            else if(listOfSelectedDataSubjectCategories.contains(category.getDscName())) {
+                response.add(r);
+            }
+        });
+
+        return response;
     }
 }
 
