@@ -2,10 +2,8 @@ package priam.right.web;
 
 import org.springframework.web.bind.annotation.*;
 import priam.right.dto.*;
-import priam.right.enums.TypeDataRequest;
 import priam.right.services.DataRequestService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +12,7 @@ import java.util.Map;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "/api", produces = "application/json")
 public class DataRequestRestController {
-    private DataRequestService dataRequestService;
+    private final DataRequestService dataRequestService;
 
     public DataRequestRestController(DataRequestService dataRequestService) {
         this.dataRequestService = dataRequestService;
@@ -65,14 +63,9 @@ public class DataRequestRestController {
         System.out.println("recupération c bn "+idDS+dataTypeName+attributes);
         return dataRequestService.DataAccess(idDS,dataTypeName,attributes);
     }
-    @PostMapping(path = "/isAccepted")
-    public boolean isDataRequestAcceptedForDataId(@RequestBody IsAcceptedDTO isAcceptedDTO) {
-        try {
-            return dataRequestService.isAccepted(isAcceptedDTO.getDataSubjectId(), isAcceptedDTO.getDataid());
-        }
-        catch (Exception e) {
-            return false;
-        }
+    @GetMapping(path = "/isAccepted")
+    public boolean isDataRequestAcceptedForDataId(@RequestParam int dataSubjectId, @RequestParam int dataId) {
+        return dataRequestService.isAccepted(dataSubjectId, dataId);
     }
 
     @PostMapping(path = "/right/recordAccessRequest")

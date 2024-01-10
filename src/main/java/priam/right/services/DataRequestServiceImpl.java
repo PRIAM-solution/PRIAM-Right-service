@@ -1,12 +1,12 @@
 package priam.right.services;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import priam.right.dto.DSCategoryResponseDTO;
 import priam.right.dto.DataRequestResponseDTO;
 import priam.right.dto.RequestDetailDTO;
 import priam.right.dto.RequestListDTO;
 import priam.right.entities.*;
+import priam.right.enums.AnswerType;
 import priam.right.enums.TypeDataRequest;
 import priam.right.mappers.DataRequestMapper;
 import priam.right.openfeign.DataRestClient;
@@ -238,8 +238,8 @@ public class DataRequestServiceImpl implements DataRequestService {
         RequestAnswer rectificationAnswer = new RequestAnswer();
         if(answer == true){
 
-            rectificationAnswer.setAnswer(true);
-            rectificationAnswer.setClaimAnswer(claimAnswer);
+            rectificationAnswer.setAnswer(AnswerType.VALIDATED);
+            rectificationAnswer.setClaim(claimAnswer);
             rectificationAnswer.setDataRequest(dataRequest);
             rectificationAnswer.setClaimDate(new Date());
             requestAnswerRepository.save(rectificationAnswer);
@@ -275,8 +275,8 @@ public class DataRequestServiceImpl implements DataRequestService {
             });
 
         }else{
-            rectificationAnswer.setAnswer(false);
-            rectificationAnswer.setClaimAnswer(claimAnswer);
+            rectificationAnswer.setAnswer(AnswerType.REFUSED);
+            rectificationAnswer.setClaim(claimAnswer);
             rectificationAnswer.setDataRequest(dataRequest);
             rectificationAnswer.setClaimDate(new Date());
             requestAnswerRepository.save(rectificationAnswer);
@@ -300,8 +300,8 @@ public class DataRequestServiceImpl implements DataRequestService {
         RequestAnswer erasureAnswer = new RequestAnswer();
         if(answer == true){
 
-            erasureAnswer.setAnswer(true);
-            erasureAnswer.setClaimAnswer(claimAnswer);
+            erasureAnswer.setAnswer(AnswerType.VALIDATED);
+            erasureAnswer.setClaim(claimAnswer);
             erasureAnswer.setDataRequest(dataRequest);
             erasureAnswer.setClaimDate(new Date());
             requestAnswerRepository.save(erasureAnswer);
@@ -336,8 +336,8 @@ public class DataRequestServiceImpl implements DataRequestService {
             });
 
         }else{
-            erasureAnswer.setAnswer(false);
-            erasureAnswer.setClaimAnswer(claimAnswer);
+            erasureAnswer.setAnswer(AnswerType.REFUSED);
+            erasureAnswer.setClaim(claimAnswer);
             erasureAnswer.setDataRequest(dataRequest);
             erasureAnswer.setClaimDate(new Date());
             requestAnswerRepository.save(erasureAnswer);
@@ -377,21 +377,54 @@ public class DataRequestServiceImpl implements DataRequestService {
 
     @Override
     public boolean isAccepted(int dataSubjectId, int dataId) {
-        return dataRequestDataRepository.isDataAcceptedByDataSubjectIdAndDataId(dataSubjectId, dataId);
+        Optional<Boolean> isAccepted = dataRequestDataRepository.isDataAcceptedByDataSubjectIdAndDataId(dataSubjectId, dataId);
+        if(isAccepted.isPresent())
+            return isAccepted.get();
+        else
+            return false;
     }
 
     @Override
     public List<RequestListDTO> getDataRequestByFilters(List<String> listOfSelectedTypeDataRequests, List<String> listOfSelectedStatus, List<String> listOfSelectedDataSubjectCategories) {
         List<RequestListDTO> response = new ArrayList<>();
-        List<DataRequest> filteredList= new ArrayList<>();
+        // Filter with Type of DataRequest
+        List<DataRequest> filteredTypeList;
         if(listOfSelectedTypeDataRequests.isEmpty()) {
-            filteredList = dataRequestRepository.findAll();
+            filteredTypeList = dataRequestRepository.findAll();
         }
         else {
-            filteredList = dataRequestRepository.findByTypes(listOfSelectedTypeDataRequests);
+            filteredTypeList = new ArrayList<>();
+            filteredTypeList = dataRequestRepository.findByTypes(listOfSelectedTypeDataRequests);
         }
 
-        filteredList.forEach(dataRequest -> {
+        // Filter with status of DataRequest
+        List<DataRequest> filteredStatusList;
+        System.out.println(listOfSelectedStatus);
+        if(listOfSelectedStatus.isEmpty()) {
+            filteredStatusList = filteredTypeList;
+        }
+        else {
+            filteredStatusList = new ArrayList<>();
+            filteredTypeList.forEach(dataRequest -> {
+                Optional<RequestAnswer> answer = requestAnswerRepository.findRequestAnswerByRequestId((long) dataRequest.getId());
+                System.out.println(answer.isPresent());
+                System.out.println(listOfSelectedStatus.contains(AnswerType.IN_PROGRESS.toString()));
+                // First case : If looking for validated or refused requests
+                if(answer.isPresent()) {
+                    AnswerType answerType = answer.get().getAnswer();
+                    if(listOfSelectedStatus.contains(answerType.toString())) {
+                        filteredStatusList.add(dataRequest);
+                    }
+                }
+                // Second case : looking for in progess requests (so no answer yet)
+                else if(listOfSelectedStatus.contains(AnswerType.IN_PROGRESS.toString())) {
+                    filteredStatusList.add(dataRequest);
+                }
+            });
+        }
+
+        // Filter with DataSubjectCategory
+        filteredStatusList.forEach(dataRequest -> {
             DSCategoryResponseDTO category = actorRestClient.getDSCategoryById(dataRequest.getDataSubjectId());
             RequestListDTO r = new RequestListDTO();
             r.setRequestId(dataRequest.getId());
@@ -432,7 +465,6 @@ public class DataRequestServiceImpl implements DataRequestService {
         // Data information
         List<DataRequestData> dataRequestDatas = dataRequestDataRepository.findDataRequestDataByDataRequestId(requestId);
         dataRequestDatas.forEach(drd -> {
-            System.out.println(drd);
             Data data = dataRestClient.getData(drd.getDataId());
             String dataTypeName = dataRestClient.getDataTypeNameByDataTypeId(data.getData_type_id());
             response.addData(dataTypeName, data.getId(), data.getAttribute(), drd.isAnswer());

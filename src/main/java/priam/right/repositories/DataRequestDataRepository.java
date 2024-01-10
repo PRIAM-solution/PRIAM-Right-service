@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import priam.right.entities.DataRequestData;
 
 import java.util.List;
+import java.util.Optional;
 
 //@Repository
 public interface DataRequestDataRepository extends JpaRepository<DataRequestData, Integer> {
@@ -22,5 +23,5 @@ public interface DataRequestDataRepository extends JpaRepository<DataRequestData
             "(SELECT id FROM data_request WHERE data_subject_id = :dataSubjectId AND claim_date BETWEEN" +
             "        DATE_SUB(DATE(NOW()), INTERVAL 2 DAY) AND DATE(NOW()) )",
             nativeQuery = true)
-    boolean isDataAcceptedByDataSubjectIdAndDataId(int dataSubjectId, int dataId);
+    Optional<Boolean> isDataAcceptedByDataSubjectIdAndDataId(int dataSubjectId, int dataId);
 }
