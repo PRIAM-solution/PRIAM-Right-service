@@ -4,6 +4,7 @@ package priam.right.services;
 import priam.right.dto.DataRequestResponseDTO;
 import priam.right.dto.RequestDetailDTO;
 import priam.right.dto.RequestListDTO;
+import priam.right.entities.RequestAnswer;
 import priam.right.enums.TypeDataRequest;
 
 import java.util.ArrayList;
@@ -35,4 +36,5 @@ public interface DataRequestService {
     List<RequestListDTO> getDataRequestByFilters(List<String> listOfSelectedTypeDataRequests, List<String> listOfSelectedStatus, List<String> listOfSelectedDataSubjectCategories);
 
     RequestDetailDTO getRequestDataDetail(int requestId);
+    RequestAnswer getRequestAnswerByDataRequestId(int requestId);
 }

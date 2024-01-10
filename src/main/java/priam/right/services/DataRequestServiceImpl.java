@@ -472,5 +472,14 @@ public class DataRequestServiceImpl implements DataRequestService {
 
         return response;
     }
+
+    @Override
+    public RequestAnswer getRequestAnswerByDataRequestId(int requestId) {
+        Optional<RequestAnswer> res = requestAnswerRepository.findRequestAnswerByRequestId((long) requestId);
+        if(res.isPresent())
+            return res.get();
+        else
+            return null;
+    }
 }
 

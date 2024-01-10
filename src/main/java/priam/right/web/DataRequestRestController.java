@@ -2,6 +2,7 @@ package priam.right.web;
 
 import org.springframework.web.bind.annotation.*;
 import priam.right.dto.*;
+import priam.right.entities.RequestAnswer;
 import priam.right.services.DataRequestService;
 
 import java.util.List;
@@ -81,5 +82,10 @@ public class DataRequestRestController {
     @GetMapping(path = "right/requestDetail/{requestId}")
     public RequestDetailDTO getRequestDetail(@PathVariable int requestId) {
         return dataRequestService.getRequestDataDetail(requestId);
+    }
+
+    @GetMapping(path = "right/answerOfRequest/{requestId}")
+    public RequestAnswer getRequestAnswer(@PathVariable int requestId) {
+        return dataRequestService.getRequestAnswerByDataRequestId(requestId);
     }
 }
