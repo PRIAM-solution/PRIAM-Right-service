@@ -15,6 +15,8 @@ public interface DataRequestDataRepository extends JpaRepository<DataRequestData
             nativeQuery = true)
     List<Integer> findDataIdsByDataRequestId(int dataRequestId);
 
+    List<DataRequestData> findDataRequestDataByDataRequestId(int dataRequestId);
+
 
     @Query(value= "SELECT answer FROM Data_Request_Data WHERE data_id =:dataId AND data_request_id IN " +
             "(SELECT id FROM data_request WHERE data_subject_id = :dataSubjectId AND claim_date BETWEEN" +

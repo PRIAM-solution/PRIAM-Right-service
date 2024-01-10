@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import priam.right.dto.DSCategoryResponseDTO;
 import priam.right.dto.DataRequestResponseDTO;
+import priam.right.dto.RequestDetailDTO;
 import priam.right.dto.RequestListDTO;
 import priam.right.entities.*;
 import priam.right.enums.TypeDataRequest;
@@ -405,6 +406,36 @@ public class DataRequestServiceImpl implements DataRequestService {
             else if(listOfSelectedDataSubjectCategories.contains(category.getDscName())) {
                 response.add(r);
             }
+        });
+
+        return response;
+    }
+
+    @Override
+    public RequestDetailDTO getRequestDataDetail(int requestId) {
+        RequestDetailDTO response = new RequestDetailDTO();
+
+        // DataRequest information
+        DataRequest dataRequest = dataRequestRepository.getById(requestId);
+        response.setRequestId(dataRequest.getId());
+        response.setResponse(dataRequest.isResponse());
+        response.setIsolated(dataRequest.isIsolated());
+        response.setIssuedAt(dataRequest.getClaimDate());
+        response.setNewValue(dataRequest.getNewValue());
+        response.setTypeRequest(dataRequest.getType());
+
+        // DataSubject information
+        DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
+        DSCategoryResponseDTO category = actorRestClient.getDSCategoryById(dataRequest.getDataSubjectId());
+        response.setDataSubject(dataSubject.getId(), dataSubject.getIdRef(), category.getDscName());
+
+        // Data information
+        List<DataRequestData> dataRequestDatas = dataRequestDataRepository.findDataRequestDataByDataRequestId(requestId);
+        dataRequestDatas.forEach(drd -> {
+            System.out.println(drd);
+            Data data = dataRestClient.getData(drd.getDataId());
+            String dataTypeName = dataRestClient.getDataTypeNameByDataTypeId(data.getData_type_id());
+            response.addData(dataTypeName, data.getId(), data.getAttribute(), drd.isAnswer());
         });
 
         return response;

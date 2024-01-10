@@ -81,7 +81,12 @@ public class DataRequestRestController {
     }
 
     @GetMapping(path = "right/requestList")
-    public List<RequestListDTO> getRequestList(@RequestParam List<String> listOfSelectedTypeDataRequests, @RequestParam List<String> listOfSelectedStatus, @RequestParam List<String> listOfSelectedDataSubjectCategories) {
+    public List<RequestListDTO> getRequestListByFilters(@RequestParam List<String> listOfSelectedTypeDataRequests, @RequestParam List<String> listOfSelectedStatus, @RequestParam List<String> listOfSelectedDataSubjectCategories) {
         return dataRequestService.getDataRequestByFilters(listOfSelectedTypeDataRequests, listOfSelectedStatus, listOfSelectedDataSubjectCategories);
+    }
+
+    @GetMapping(path = "right/requestDetail/{requestId}")
+    public RequestDetailDTO getRequestDetail(@PathVariable int requestId) {
+        return dataRequestService.getRequestDataDetail(requestId);
     }
 }

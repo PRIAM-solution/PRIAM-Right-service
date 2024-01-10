@@ -2,6 +2,7 @@ package priam.right.services;
 
 
 import priam.right.dto.DataRequestResponseDTO;
+import priam.right.dto.RequestDetailDTO;
 import priam.right.dto.RequestListDTO;
 import priam.right.enums.TypeDataRequest;
 
@@ -32,4 +33,6 @@ public interface DataRequestService {
     boolean isAccepted(int dataSubjectId, int dataId);
 
     List<RequestListDTO> getDataRequestByFilters(List<String> listOfSelectedTypeDataRequests, List<String> listOfSelectedStatus, List<String> listOfSelectedDataSubjectCategories);
+
+    RequestDetailDTO getRequestDataDetail(int requestId);
 }

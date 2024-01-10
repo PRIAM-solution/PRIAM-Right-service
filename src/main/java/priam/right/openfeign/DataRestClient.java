@@ -13,6 +13,9 @@ public interface DataRestClient {
     @GetMapping(path = "/api/dataId/{attribute}")
     public int getIdByName(@PathVariable String attribute);
 
+    @GetMapping(path = "/api//datatype/data/{dataTypeId}")
+    public String getDataTypeNameByDataTypeId(@PathVariable int dataTypeId);
+
     @GetMapping(path = "/api/personalData/{id}")
     Data getData(@PathVariable(name = "id") int id);
 
