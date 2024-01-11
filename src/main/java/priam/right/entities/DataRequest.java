@@ -3,8 +3,8 @@ package priam.right.entities;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import priam.right.enums.TypeDataRequest;
+
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
 
 @lombok.Data

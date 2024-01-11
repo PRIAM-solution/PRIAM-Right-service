@@ -1,5 +1,5 @@
 package priam.right.enums;
 
 public enum TypeDataRequest {
-    Rectification, Forgotten, Knowledge;
+    Rectification, Forgotten, Access, Portability;
 }

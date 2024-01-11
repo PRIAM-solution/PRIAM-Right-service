@@ -7,6 +7,7 @@ import priam.right.dto.RequestDetailDTO;
 import priam.right.dto.RequestListDTO;
 import priam.right.entities.*;
 import priam.right.enums.AnswerType;
+import priam.right.enums.StatusDataRequestType;
 import priam.right.enums.TypeDataRequest;
 import priam.right.mappers.DataRequestMapper;
 import priam.right.openfeign.DataRestClient;
@@ -238,7 +239,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         RequestAnswer rectificationAnswer = new RequestAnswer();
         if(answer == true){
 
-            rectificationAnswer.setAnswer(AnswerType.VALIDATED);
+            rectificationAnswer.setAnswer(AnswerType.FULL);
             rectificationAnswer.setClaim(claimAnswer);
             rectificationAnswer.setDataRequest(dataRequest);
             rectificationAnswer.setClaimDate(new Date());
@@ -300,7 +301,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         RequestAnswer erasureAnswer = new RequestAnswer();
         if(answer == true){
 
-            erasureAnswer.setAnswer(AnswerType.VALIDATED);
+            erasureAnswer.setAnswer(AnswerType.FULL);
             erasureAnswer.setClaim(claimAnswer);
             erasureAnswer.setDataRequest(dataRequest);
             erasureAnswer.setClaimDate(new Date());
@@ -357,7 +358,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         dataRequest.setDataSubject(dataSubject);
         dataRequest.setClaimDate(new Date());
         dataRequest.setClaim(claim);
-        dataRequest.setType(TypeDataRequest.Knowledge);
+        dataRequest.setType(TypeDataRequest.Access);
 
         dataRequest.setResponse(false);
         dataRequest.setIsolated(true);
@@ -408,16 +409,21 @@ public class DataRequestServiceImpl implements DataRequestService {
             filteredTypeList.forEach(dataRequest -> {
                 Optional<RequestAnswer> answer = requestAnswerRepository.findRequestAnswerByRequestId((long) dataRequest.getId());
                 System.out.println(answer.isPresent());
-                System.out.println(listOfSelectedStatus.contains(AnswerType.IN_PROGRESS.toString()));
+                System.out.println(listOfSelectedStatus.contains(StatusDataRequestType.IN_PROGRESS.toString()));
                 // First case : If looking for validated or refused requests
                 if(answer.isPresent()) {
                     AnswerType answerType = answer.get().getAnswer();
                     if(listOfSelectedStatus.contains(answerType.toString())) {
                         filteredStatusList.add(dataRequest);
+                    } // If we just want validated answer (so no difference between full or partial answer)
+                    else if(listOfSelectedStatus.contains(StatusDataRequestType.VALIDATED.toString())) {
+                        if(answerType.equals(AnswerType.FULL) || answerType.equals(AnswerType.PARTIAL)) {
+                            filteredStatusList.add(dataRequest);
+                        }
                     }
                 }
                 // Second case : looking for in progess requests (so no answer yet)
-                else if(listOfSelectedStatus.contains(AnswerType.IN_PROGRESS.toString())) {
+                else if(listOfSelectedStatus.contains(StatusDataRequestType.IN_PROGRESS.toString())) {
                     filteredStatusList.add(dataRequest);
                 }
             });
