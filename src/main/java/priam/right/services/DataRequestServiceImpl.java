@@ -107,7 +107,7 @@ public class DataRequestServiceImpl implements DataRequestService {
 
         dataRequest.setClaimDate(new Date());
         dataRequest.setClaim(claim);
-        dataRequest.setType(TypeDataRequest.Forgotten);
+        dataRequest.setType(TypeDataRequest.Erasure);
 
         dataRequest.setResponse(false);
 
@@ -204,7 +204,7 @@ public class DataRequestServiceImpl implements DataRequestService {
     @Override
     public List<DataRequestResponseDTO> getListErasureRequests() {
         List<DataRequestResponseDTO> response = new ArrayList<>();
-        List<DataRequest> dataRequestList = dataRequestRepository.findByType(TypeDataRequest.Forgotten);
+        List<DataRequest> dataRequestList = dataRequestRepository.findByType(TypeDataRequest.Erasure);
 
         for (DataRequest dataRequest : dataRequestList)
         {
@@ -379,10 +379,7 @@ public class DataRequestServiceImpl implements DataRequestService {
     @Override
     public boolean isAccepted(int dataSubjectId, int dataId) {
         Optional<Boolean> isAccepted = dataRequestDataRepository.isDataAcceptedByDataSubjectIdAndDataId(dataSubjectId, dataId);
-        if(isAccepted.isPresent())
-            return isAccepted.get();
-        else
-            return false;
+        return isAccepted.orElse(false);
     }
 
     @Override
@@ -400,7 +397,6 @@ public class DataRequestServiceImpl implements DataRequestService {
 
         // Filter with status of DataRequest
         List<DataRequest> filteredStatusList;
-        System.out.println(listOfSelectedStatus);
         if(listOfSelectedStatus.isEmpty()) {
             filteredStatusList = filteredTypeList;
         }

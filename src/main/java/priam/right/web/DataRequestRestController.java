@@ -5,8 +5,10 @@ import priam.right.dto.*;
 import priam.right.entities.RequestAnswer;
 import priam.right.services.DataRequestService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
@@ -75,8 +77,8 @@ public class DataRequestRestController {
     }
 
     @GetMapping(path = "right/requestList")
-    public List<RequestListDTO> getRequestListByFilters(@RequestParam List<String> listOfSelectedTypeDataRequests, @RequestParam List<String> listOfSelectedStatus, @RequestParam List<String> listOfSelectedDataSubjectCategories) {
-        return dataRequestService.getDataRequestByFilters(listOfSelectedTypeDataRequests, listOfSelectedStatus, listOfSelectedDataSubjectCategories);
+    public List<RequestListDTO> getRequestListByFilters(@RequestParam Optional<List<String>> listOfSelectedTypeDataRequests, @RequestParam Optional<List<String>> listOfSelectedStatus, @RequestParam Optional<List<String>> listOfSelectedDataSubjectCategories) {
+        return dataRequestService.getDataRequestByFilters(listOfSelectedTypeDataRequests.orElse(new ArrayList<>()), listOfSelectedStatus.orElse(new ArrayList<>()), listOfSelectedDataSubjectCategories.orElse(new ArrayList<>()));
     }
 
     @GetMapping(path = "right/requestDetail/{requestId}")
