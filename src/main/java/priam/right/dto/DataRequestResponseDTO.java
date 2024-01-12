@@ -9,6 +9,7 @@ import priam.right.enums.TypeDataRequest;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @lombok.Data
@@ -25,11 +26,11 @@ public class DataRequestResponseDTO {
     private List<Data> datas = new ArrayList<>();
     private DataSubject dataSubject;
 
-    private String primaryKeyValue;
+    private HashMap<Integer, String> primaryKeys;
 
     private boolean response;
 
-    public DataRequestResponseDTO(DataRequest dataRequest, List<Data> datas) {
+    public DataRequestResponseDTO(DataRequest dataRequest, List<Data> datas, HashMap<Integer, String> primaryKeys) {
         this.id = dataRequest.getId();
         this.claim = dataRequest.getClaim();
         this.claimDate = dataRequest.getClaimDate();
@@ -37,9 +38,9 @@ public class DataRequestResponseDTO {
         this.isIsolated = dataRequest.isIsolated();
         this.type = dataRequest.getType();
         this.dataSubject = dataRequest.getDataSubject();
-        this.primaryKeyValue = dataRequest.getPrimaryKeyValue();
         this.response = dataRequest.isResponse();
 
         this.datas = datas;
+        this.primaryKeys = primaryKeys;
     }
 }

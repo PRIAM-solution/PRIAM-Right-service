@@ -1,9 +1,11 @@
 package priam.right.services;
 
 
+import priam.right.dto.DataRequestRequestDTO;
 import priam.right.dto.DataRequestResponseDTO;
 import priam.right.dto.RequestDetailDTO;
 import priam.right.dto.RequestListDTO;
+import priam.right.entities.DataRequest;
 import priam.right.entities.RequestAnswer;
 import priam.right.enums.TypeDataRequest;
 
@@ -17,9 +19,7 @@ public interface DataRequestService {
 
     List<DataRequestResponseDTO> getListDataRequestByDataSubjectId(int id);
 
-    DataRequestResponseDTO saveRectificationRequest(String attribute, String newValue, String patientIdRef, String claim, String primaryKeyValue);
-
-    DataRequestResponseDTO saveErasureRequest(String idRef,String attribute,String claim, String primaryKeyValue);
+    DataRequestResponseDTO saveDataRequest(DataRequestRequestDTO dataRequestRequestDTO, TypeDataRequest typeDataRequest);
 
     DataRequestResponseDTO RectificationAnswer(int idRequest, boolean answer, String claim);
 

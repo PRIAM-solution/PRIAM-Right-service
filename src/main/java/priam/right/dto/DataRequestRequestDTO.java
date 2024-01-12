@@ -1,26 +1,49 @@
 package priam.right.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
+import priam.right.enums.TypeDataRequest;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @lombok.Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class DataRequestRequestDTO {
-    private int id;
-    private String claim;
-    //private Date claimDate;
-    private String newValue;
-    private boolean isIsolated;
-    private String type = "Rectification";
-    private int dataId;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class DataItem {
+        private int dataId;
+    }
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class PrimaryKeyItems {
+        private int primaryKeyId; // DataId
+        private String primaryKeyValue;
+    }
+
     private int dataSubjectId;
-    private boolean response;
+    private String dataTypeName;
+    private DataItem data;
+    private String newValue;
+    private String claim;
 
-    private String attribute;
-    private String idRef;
+    private List<PrimaryKeyItems> primaryKeys = new ArrayList<>();
 
-    private String primaryKeyValue;
-
-
+    public HashMap<Integer, String> getPrimaryKeys() {
+        HashMap<Integer, String> map = new HashMap<>();
+        primaryKeys.forEach(p -> {
+            map.put(p.primaryKeyId, p.primaryKeyValue);
+        });
+        return map;
+    }
+    public int getDataId() {
+        return data.dataId;
+    }
 }

@@ -1,10 +1,7 @@
 package priam.right.services;
 
 import org.springframework.stereotype.Service;
-import priam.right.dto.DSCategoryResponseDTO;
-import priam.right.dto.DataRequestResponseDTO;
-import priam.right.dto.RequestDetailDTO;
-import priam.right.dto.RequestListDTO;
+import priam.right.dto.*;
 import priam.right.entities.*;
 import priam.right.enums.AnswerType;
 import priam.right.enums.StatusDataRequestType;
@@ -15,6 +12,7 @@ import priam.right.openfeign.ActorRestClient;
 
 import priam.right.openfeign.ProviderRestClient;
 import priam.right.repositories.DataRequestDataRepository;
+import priam.right.repositories.DataRequestPrimaryKeyRepository;
 import priam.right.repositories.DataRequestRepository;
 import priam.right.repositories.RequestAnswerRepository;
 
@@ -37,10 +35,11 @@ public class DataRequestServiceImpl implements DataRequestService {
     private ProviderRestClient providerRestClient;
     private RequestAnswerRepository requestAnswerRepository;
     private DataRequestDataRepository dataRequestDataRepository;
+    private DataRequestPrimaryKeyRepository dataRequestPrimaryKeyRepository;
 
     public DataRequestServiceImpl(DataRequestRepository dataRequestRepository, DataRequestMapper dataRequestMapper,
                                   ProviderRestClient providerRestClient, DataRestClient dataRestClient, ActorRestClient actorRestClient, RequestAnswerRepository requestAnswerRepository,
-                                  DataRequestDataRepository dataRequestDataRepository) {
+                                  DataRequestDataRepository dataRequestDataRepository, DataRequestPrimaryKeyRepository dataRequestPrimaryKeyRepository) {
         this.dataRequestRepository = dataRequestRepository;
         this.dataRequestMapper = dataRequestMapper;
         this.dataRestClient = dataRestClient;
@@ -48,6 +47,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         this.providerRestClient = providerRestClient;
         this.requestAnswerRepository = requestAnswerRepository;
         this.dataRequestDataRepository = dataRequestDataRepository;
+        this.dataRequestPrimaryKeyRepository = dataRequestPrimaryKeyRepository;
     }
 
     public List<Map<String, String>> DataAccess(int idDS, String dataTypeName, List<String> attributes){
@@ -55,80 +55,41 @@ public class DataRequestServiceImpl implements DataRequestService {
         return providerRestClient.getPersonalDataValues(idDS, dataTypeName, attributes);
     }
     @Override
-    public DataRequestResponseDTO saveRectificationRequest(String idRef,String attribute, String newValue,  String claim, String primaryKeyaValue) {
-
+    public DataRequestResponseDTO saveDataRequest(DataRequestRequestDTO dataRequestDTO, TypeDataRequest typeDataRequest) {
         DataRequest dataRequest = new DataRequest();
+        dataRequest.setDataSubjectId(dataRequestDTO.getDataSubjectId());
+        dataRequest.setNewValue(dataRequestDTO.getNewValue());
+        dataRequest.setClaim(dataRequest.getClaim());
 
-        dataRequest.setNewValue(newValue);
-
-        int idd = dataRestClient.getIdByName(attribute);
-        Data data = dataRestClient.getData(idd);
-
-        DataSubject dataSubject = actorRestClient.getDataSubjectByRef(idRef);
-        dataRequest.setDataSubject(dataSubject);
-
+        dataRequest.setType(typeDataRequest);
         dataRequest.setClaimDate(new Date());
-        dataRequest.setClaim(claim);
-        dataRequest.setType(TypeDataRequest.Rectification);
-
         dataRequest.setResponse(false);
-
         dataRequest.setIsolated(true);
-        dataRequest.setDataSubjectId(dataSubject.getId());
 
-        dataRequest.setPrimaryKeyValue(primaryKeyaValue);
+        HashMap<Integer, String> primaryKeys = dataRequestDTO.getPrimaryKeys();
+
+        Data data = dataRestClient.getData(dataRequestDTO.getDataId());
+
+        DataSubject dataSubject = actorRestClient.getDataSubject(dataRequestDTO.getDataSubjectId());
+        dataRequest.setDataSubject(dataSubject);
 
         DataRequest result = dataRequestRepository.save(dataRequest);
 
         // DataRequestData
-        DataRequestData drd = new DataRequestData();
-        drd.setDataRequestId(result.getId());
-        drd.setDataId(data.getId());
+        DataRequestData drd = new DataRequestData(result.getId(), data.getId(), false);
         dataRequestDataRepository.save(drd);
 
         ArrayList<Data> datas = new ArrayList<>();
         datas.add(data);
 
-        // Response DTO
-        DataRequestResponseDTO response = new DataRequestResponseDTO(result, datas);
-        return response;
-    }
-
-    @Override
-    public DataRequestResponseDTO saveErasureRequest(String idRef,String attribute, String claim, String primaryKeyaValue) {
-
-        DataRequest dataRequest = new DataRequest();
-
-        int idd = dataRestClient.getIdByName(attribute);
-        Data data = dataRestClient.getData(idd);
-
-        DataSubject dataSubject2 = actorRestClient.getDataSubjectByRef(idRef);
-        dataRequest.setDataSubject(dataSubject2);
-
-        dataRequest.setClaimDate(new Date());
-        dataRequest.setClaim(claim);
-        dataRequest.setType(TypeDataRequest.Erasure);
-
-        dataRequest.setResponse(false);
-
-        dataRequest.setIsolated(true);
-        dataRequest.setDataSubjectId(dataSubject2.getId());
-
-        dataRequest.setPrimaryKeyValue(primaryKeyaValue);
-
-        DataRequest result = dataRequestRepository.save(dataRequest);
-
-        // DataRequestData
-        DataRequestData drd = new DataRequestData();
-        drd.setDataRequestId(result.getId());
-        drd.setDataId(data.getId());
-        dataRequestDataRepository.save(drd);
-
-        List<Data> datas = new ArrayList<>();
-        datas.add(data);
+        // PrimaryKeys
+        primaryKeys.forEach((id, value)-> {
+            DataRequestPrimaryKey dataRequestPrimaryKey = new DataRequestPrimaryKey(result.getId(), id, value);
+            dataRequestPrimaryKeyRepository.save(dataRequestPrimaryKey);
+        });
 
         // Response DTO
-        DataRequestResponseDTO response = new DataRequestResponseDTO(result, datas);
+        DataRequestResponseDTO response = new DataRequestResponseDTO(result, datas, primaryKeys);
         return response;
     }
 
@@ -148,7 +109,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         dataRequest.setDataSubject(dataSubject);
 
         // Response DTO
-        DataRequestResponseDTO response = new DataRequestResponseDTO(dataRequest, datas);
+        DataRequestResponseDTO response = new DataRequestResponseDTO(dataRequest, datas, null);
         return response;
     }
 
@@ -170,7 +131,7 @@ public class DataRequestServiceImpl implements DataRequestService {
 
             DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
             dataRequest.setDataSubject(dataSubject);
-            response.add(new DataRequestResponseDTO(dataRequest, datas));
+            response.add(new DataRequestResponseDTO(dataRequest, datas, null));
         }
 
         return response;
@@ -195,7 +156,7 @@ public class DataRequestServiceImpl implements DataRequestService {
 
             DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
             dataRequest.setDataSubject(dataSubject);
-            response.add(new DataRequestResponseDTO(dataRequest, datas));
+            response.add(new DataRequestResponseDTO(dataRequest, datas, null));
 
         }
         return response;
@@ -220,7 +181,7 @@ public class DataRequestServiceImpl implements DataRequestService {
 
             DataSubject dataSubject1 = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
             dataRequest.setDataSubject(dataSubject1);
-            response.add(new DataRequestResponseDTO(dataRequest, datas));
+            response.add(new DataRequestResponseDTO(dataRequest, datas, null));
 
         }
         return response;
@@ -285,7 +246,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         dataRequest.setIsolated(false);
 
         // Response DTO
-        DataRequestResponseDTO response = new DataRequestResponseDTO(dataRequest, datas);
+        DataRequestResponseDTO response = new DataRequestResponseDTO(dataRequest, datas, null);
         return response;
     }
 
@@ -346,7 +307,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         dataRequest.setIsolated(false);
 
         // Response DTO
-        DataRequestResponseDTO response = new DataRequestResponseDTO(dataRequest, datas);
+        DataRequestResponseDTO response = new DataRequestResponseDTO(dataRequest, datas, null);
         return response;
     }
 

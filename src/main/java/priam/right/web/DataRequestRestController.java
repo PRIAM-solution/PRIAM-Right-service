@@ -2,7 +2,9 @@ package priam.right.web;
 
 import org.springframework.web.bind.annotation.*;
 import priam.right.dto.*;
+import priam.right.entities.DataRequest;
 import priam.right.entities.RequestAnswer;
+import priam.right.enums.TypeDataRequest;
 import priam.right.services.DataRequestService;
 
 import java.util.ArrayList;
@@ -36,14 +38,14 @@ public class DataRequestRestController {
         return dataRequestService.getDataRequest(id);
     }
 
-    @PostMapping(path = "/params")
-    public DataRequestResponseDTO RectificationRequest(@RequestBody DataRequestRequestDTO dataRequest/*String idRef,@RequestBody String attribute,@RequestBody String newValue,@RequestBody String claim*/) {
-        return dataRequestService.saveRectificationRequest(dataRequest.getIdRef(),dataRequest.getAttribute(),dataRequest.getNewValue(),dataRequest.getClaim(), dataRequest.getPrimaryKeyValue());
+    @PostMapping(path = "/right/rectificationRequest")
+    public DataRequestResponseDTO RectificationRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
+        return dataRequestService.saveDataRequest(dataRequestDTO, TypeDataRequest.Rectification);
     }
 
-    @PostMapping(path = "/erasureParams")
-    public DataRequestResponseDTO ErasureRequest(@RequestBody DataRequestRequestDTO dataRequest) {
-        return dataRequestService.saveErasureRequest(dataRequest.getIdRef(),dataRequest.getAttribute(),dataRequest.getClaim(), dataRequest.getPrimaryKeyValue());
+    @PostMapping(path = "/right/erasureRequest")
+    public DataRequestResponseDTO ErasureRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
+        return dataRequestService.saveDataRequest(dataRequestDTO, TypeDataRequest.Erasure);
     }
 
     @PostMapping(path = "/answerRectification")
