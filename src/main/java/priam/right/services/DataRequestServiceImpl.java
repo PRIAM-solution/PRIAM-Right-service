@@ -390,7 +390,7 @@ public class DataRequestServiceImpl implements DataRequestService {
             RequestListDTO r = new RequestListDTO();
             r.setRequestId(dataRequest.getId());
             r.setResponse(dataRequest.isResponse());
-            r.setTypeRequest(dataRequest.getType());
+            r.setRequestType(dataRequest.getType());
             r.setIssuedAt(dataRequest.getClaimDate());
             r.setDataSubjectCategory(category);
             

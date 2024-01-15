@@ -33,7 +33,7 @@ public class DataRequestRestController {
         return dataRequestService.getListErasureRequests();
     }
 
-    @GetMapping(path = "/dataRequestRectification/{id}")
+    @GetMapping(path = "right/dataRequest/{id}")
     public DataRequestResponseDTO getDataRequest(@PathVariable int id) {
         return dataRequestService.getDataRequest(id);
     }

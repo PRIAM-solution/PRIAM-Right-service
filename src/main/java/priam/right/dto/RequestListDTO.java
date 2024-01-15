@@ -10,7 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class RequestListDTO {
     private int requestId;
-    private TypeDataRequest typeRequest;
+    private TypeDataRequest requestType;
     private Date issuedAt;
     private boolean response;
     private DSCategoryResponseDTO dataSubjectCategory;
