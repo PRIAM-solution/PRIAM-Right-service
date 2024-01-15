@@ -392,7 +392,7 @@ public class DataRequestServiceImpl implements DataRequestService {
             r.setResponse(dataRequest.isResponse());
             r.setTypeRequest(dataRequest.getType());
             r.setIssuedAt(dataRequest.getClaimDate());
-            r.setDataSubjectCategory(category.getDscName());
+            r.setDataSubjectCategory(category);
             
             if(listOfSelectedDataSubjectCategories.isEmpty()) {
                 response.add(r);

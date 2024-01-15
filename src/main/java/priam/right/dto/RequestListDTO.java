@@ -13,5 +13,5 @@ public class RequestListDTO {
     private TypeDataRequest typeRequest;
     private Date issuedAt;
     private boolean response;
-    private String dataSubjectCategory;
+    private DSCategoryResponseDTO dataSubjectCategory;
 }
