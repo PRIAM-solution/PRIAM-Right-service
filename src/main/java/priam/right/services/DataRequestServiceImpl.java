@@ -365,22 +365,20 @@ public class DataRequestServiceImpl implements DataRequestService {
             filteredStatusList = new ArrayList<>();
             filteredTypeList.forEach(dataRequest -> {
                 Optional<RequestAnswer> answer = requestAnswerRepository.findRequestAnswerByRequestId((long) dataRequest.getId());
-                System.out.println(answer.isPresent());
-                System.out.println(listOfSelectedStatus.contains(StatusDataRequestType.IN_PROGRESS.toString()));
                 // First case : If looking for validated or refused requests
                 if(answer.isPresent()) {
                     AnswerType answerType = answer.get().getAnswer();
                     if(listOfSelectedStatus.contains(answerType.toString())) {
                         filteredStatusList.add(dataRequest);
-                    } // If we just want validated answer (so no difference between full or partial answer)
-                    else if(listOfSelectedStatus.contains(StatusDataRequestType.VALIDATED.toString())) {
+                    } // If we just want completed answer (so no difference between full or partial answer)
+                    else if(listOfSelectedStatus.contains(StatusDataRequestType.Completed.toString())) {
                         if(answerType.equals(AnswerType.FULL) || answerType.equals(AnswerType.PARTIAL)) {
                             filteredStatusList.add(dataRequest);
                         }
                     }
                 }
                 // Second case : looking for in progess requests (so no answer yet)
-                else if(listOfSelectedStatus.contains(StatusDataRequestType.IN_PROGRESS.toString())) {
+                else if(listOfSelectedStatus.contains("In Progress")) {
                     filteredStatusList.add(dataRequest);
                 }
             });
