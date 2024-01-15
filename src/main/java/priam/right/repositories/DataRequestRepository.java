@@ -1,10 +1,9 @@
 package priam.right.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import priam.right.entities.DataRequest;
-import priam.right.enums.TypeDataRequest;
+import priam.right.enums.DataRequestType;
 
 import java.util.List;
 //@Repository
@@ -12,9 +11,9 @@ public interface DataRequestRepository extends JpaRepository<DataRequest, Intege
 
     List<DataRequest> findByDataSubjectId(int DataSubjectId);
 
-    List<DataRequest> findByType(TypeDataRequest type);
+    List<DataRequest> findByRequestType(DataRequestType requestType);
 
-    @Query(value = "SELECT * FROM data_request WHERE data_request.type IN :types",
+    @Query(value = "SELECT * FROM data_request WHERE data_request.request_type IN :types",
             nativeQuery = true)
     List<DataRequest> findByTypes(List<String> types);
 }

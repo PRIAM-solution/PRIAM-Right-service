@@ -1,5 +1,5 @@
 package priam.right.enums;
 
-public enum TypeDataRequest {
+public enum DataRequestType {
     Rectification, Erasure, Access, Portability;
 }

@@ -5,9 +5,8 @@ import priam.right.dto.DataRequestRequestDTO;
 import priam.right.dto.DataRequestResponseDTO;
 import priam.right.dto.RequestDetailDTO;
 import priam.right.dto.RequestListDTO;
-import priam.right.entities.DataRequest;
 import priam.right.entities.RequestAnswer;
-import priam.right.enums.TypeDataRequest;
+import priam.right.enums.DataRequestType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ public interface DataRequestService {
 
     List<DataRequestResponseDTO> getListDataRequestByDataSubjectId(int id);
 
-    DataRequestResponseDTO saveDataRequest(DataRequestRequestDTO dataRequestRequestDTO, TypeDataRequest typeDataRequest);
+    DataRequestResponseDTO saveDataRequest(DataRequestRequestDTO dataRequestRequestDTO, DataRequestType dataRequestType);
 
     DataRequestResponseDTO RectificationAnswer(int idRequest, boolean answer, String claim);
 

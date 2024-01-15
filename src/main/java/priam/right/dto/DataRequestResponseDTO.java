@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import priam.right.entities.Data;
 import priam.right.entities.DataRequest;
 import priam.right.entities.DataSubject;
-import priam.right.enums.TypeDataRequest;
+import priam.right.enums.DataRequestType;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,12 +16,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DataRequestResponseDTO {
-    private int id;
+    private int requestId;
     private String claim;
-    private Date claimDate;
+    private Date issuedAt;
     private String newValue;
     private boolean isIsolated;
-    private TypeDataRequest type;
+    private DataRequestType requestType;
 
     private List<Data> datas = new ArrayList<>();
     private DataSubject dataSubject;
@@ -31,12 +31,12 @@ public class DataRequestResponseDTO {
     private boolean response;
 
     public DataRequestResponseDTO(DataRequest dataRequest, List<Data> datas, HashMap<Integer, String> primaryKeys) {
-        this.id = dataRequest.getId();
+        this.requestId = dataRequest.getRequestId();
         this.claim = dataRequest.getClaim();
-        this.claimDate = dataRequest.getClaimDate();
+        this.issuedAt = dataRequest.getIssuedAt();
         this.newValue = dataRequest.getNewValue();
         this.isIsolated = dataRequest.isIsolated();
-        this.type = dataRequest.getType();
+        this.requestType = dataRequest.getRequestType();
         this.dataSubject = dataRequest.getDataSubject();
         this.response = dataRequest.isResponse();
 

@@ -3,7 +3,7 @@ package priam.right.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import priam.right.enums.TypeDataRequest;
+import priam.right.enums.DataRequestType;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,7 +45,7 @@ public class RequestDetailDTO {
     }
 
     private int requestId;
-    private TypeDataRequest typeRequest;
+    private DataRequestType typeRequest;
     private String newValue;
     private Date issuedAt;
     private boolean response;

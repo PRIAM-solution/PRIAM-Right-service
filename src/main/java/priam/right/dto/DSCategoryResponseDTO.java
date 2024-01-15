@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @lombok.Data
 public class DSCategoryResponseDTO {
-    private int dscId;
-    private String dscName;
+    private int dataSubjectCategoryId;
+    private String dataSubjectCategoryName;
     private String locationId;
 }

@@ -3,7 +3,6 @@ package priam.right.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import priam.right.enums.TypeDataRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;

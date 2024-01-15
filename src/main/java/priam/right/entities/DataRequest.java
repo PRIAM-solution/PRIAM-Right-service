@@ -2,7 +2,7 @@ package priam.right.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import priam.right.enums.TypeDataRequest;
+import priam.right.enums.DataRequestType;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -15,19 +15,15 @@ import java.util.Date;
 public class DataRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    //@NotNull
-    //@JsonProperty(value = "claim")
+    private int requestId;
     private String claim;
-    private Date claimDate;
-    //@NotNull
-    //@JsonProperty(value = "newValue")
+    private Date issuedAt;
     private String newValue;
 
     private boolean isIsolated;
 
     @Enumerated(EnumType.STRING)
-    private TypeDataRequest type;
+    private DataRequestType requestType;
     private int dataSubjectId;
     @Transient
     private DataSubject dataSubject;

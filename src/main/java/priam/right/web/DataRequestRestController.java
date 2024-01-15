@@ -2,9 +2,8 @@ package priam.right.web;
 
 import org.springframework.web.bind.annotation.*;
 import priam.right.dto.*;
-import priam.right.entities.DataRequest;
 import priam.right.entities.RequestAnswer;
-import priam.right.enums.TypeDataRequest;
+import priam.right.enums.DataRequestType;
 import priam.right.services.DataRequestService;
 
 import java.util.ArrayList;
@@ -40,12 +39,12 @@ public class DataRequestRestController {
 
     @PostMapping(path = "/right/rectificationRequest")
     public DataRequestResponseDTO RectificationRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
-        return dataRequestService.saveDataRequest(dataRequestDTO, TypeDataRequest.Rectification);
+        return dataRequestService.saveDataRequest(dataRequestDTO, DataRequestType.Rectification);
     }
 
     @PostMapping(path = "/right/erasureRequest")
     public DataRequestResponseDTO ErasureRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
-        return dataRequestService.saveDataRequest(dataRequestDTO, TypeDataRequest.Erasure);
+        return dataRequestService.saveDataRequest(dataRequestDTO, DataRequestType.Erasure);
     }
 
     @PostMapping(path = "/answerRectification")
