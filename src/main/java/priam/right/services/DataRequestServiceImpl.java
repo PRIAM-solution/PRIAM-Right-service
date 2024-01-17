@@ -60,7 +60,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         DataRequest dataRequest = new DataRequest();
         dataRequest.setDataSubjectId(dataRequestDTO.getDataSubjectId());
         dataRequest.setNewValue(dataRequestDTO.getNewValue());
-        dataRequest.setClaim(dataRequest.getClaim());
+        dataRequest.setClaim(dataRequestDTO.getClaim());
 
         dataRequest.setRequestType(dataRequestType);
         dataRequest.setIssuedAt(new Date());
