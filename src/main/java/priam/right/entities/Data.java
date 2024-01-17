@@ -15,5 +15,4 @@ public class Data {
     private Source source;
     private int data_type_id;
     private String data_type_name;
-    private String primary_key_name;
 }

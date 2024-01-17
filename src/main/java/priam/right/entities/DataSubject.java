@@ -7,9 +7,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DataSubject {
-    private int id;
-    private String idRef;
+
+    @lombok.Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class DataSubjectCategory {
+        private int dataSubjectCategoryId;
+        private String dataSubjectCategoryName;
+        private String locationId;
+    }
+    private int dataSubjectId;
+    private String referenceId;
     private int age;
-    //@ManyToOne
-    //private DSCategory category;
+    private DataSubjectCategory dataSubjectCategory;
+
+    public int getDataSubjectCategoryId() {
+        return dataSubjectCategory.dataSubjectCategoryId;
+    }
+    public String getDataSubjectCategoryName() {
+        return dataSubjectCategory.dataSubjectCategoryName;
+    }
 }

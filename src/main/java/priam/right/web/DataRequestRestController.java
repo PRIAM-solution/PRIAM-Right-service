@@ -74,7 +74,7 @@ public class DataRequestRestController {
 
     @PostMapping(path = "/right/recordAccessRequest")
     public void recordAccessRequest(@RequestBody AccessRequestRequestDTO accessRequestRequestDTO) {
-        dataRequestService.saveAccessRequest(accessRequestRequestDTO.getIdRef(), accessRequestRequestDTO.getClaim(), accessRequestRequestDTO.getListOfSelectedDataId());
+        dataRequestService.saveAccessRequest(accessRequestRequestDTO.getReferenceId(), accessRequestRequestDTO.getClaim(), accessRequestRequestDTO.getListOfSelectedDataId());
     }
 
     @GetMapping(path = "right/requestList")

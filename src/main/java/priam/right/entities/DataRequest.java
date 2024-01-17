@@ -28,7 +28,5 @@ public class DataRequest {
     @Transient
     private DataSubject dataSubject;
 
-    private String primaryKeyValue;
-
     private boolean response;
 }

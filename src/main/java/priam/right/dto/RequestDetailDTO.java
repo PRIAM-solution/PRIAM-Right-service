@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import priam.right.enums.DataRequestType;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @lombok.Data
 @AllArgsConstructor
@@ -22,6 +19,7 @@ public class RequestDetailDTO {
         private int dataId;
         private String attributeName;
         private boolean answerByData;
+        private Map<String, String> primaryKeys;
     }
 
     @Data
@@ -30,8 +28,8 @@ public class RequestDetailDTO {
     private static class DataTypeListItem {
         private String dataTypeName;
         private List<DataListItem> data = new ArrayList<>();
-        private void addData(int dataId, String attributeName, boolean answerByData) {
-            this.data.add(new DataListItem(dataId, attributeName, answerByData));
+        private void addData(int dataId, String attributeName, boolean answerByData, Map<String, String> primaryKeys) {
+            this.data.add(new DataListItem(dataId, attributeName, answerByData, primaryKeys));
         }
     }
 
@@ -39,13 +37,14 @@ public class RequestDetailDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class DataSubject {
-        private int id;
-        private String idRef;
+        private int dataSubjectId;
+        private String referenceId;
         private String dataSubjectCategoryName;
     }
 
     private int requestId;
     private DataRequestType typeRequest;
+    private String claim;
     private String newValue;
     private Date issuedAt;
     private boolean response;
@@ -56,15 +55,15 @@ public class RequestDetailDTO {
     public void setDataSubject(int id, String idRef, String dataSubjectCategoryName) {
         this.dataSubject = new DataSubject(id, idRef, dataSubjectCategoryName);
     }
-    public void addData(String dataTypeName, int dataId, String attributeName, boolean answerByData) {
-        Optional<DataTypeListItem> dataType = this.dataTypeList.stream().filter(dataTypeListItem -> dataTypeName.equals(dataTypeName)).findFirst();
+    public void addData(String dataTypeName, int dataId, String attributeName, boolean answerByData, Map<String, String> primaryKeys) {
+        Optional<DataTypeListItem> dataType = this.dataTypeList.stream().filter(dataTypeListItem -> dataTypeListItem.dataTypeName.equals(dataTypeName)).findFirst();
         if(dataType.isPresent()) {
-            dataType.get().addData(dataId, attributeName, answerByData);
+            dataType.get().addData(dataId, attributeName, answerByData, primaryKeys);
         }
         else {
             DataTypeListItem dt = new DataTypeListItem();
             dt.setDataTypeName(dataTypeName);
-            dt.addData(dataId, attributeName, answerByData);
+            dt.addData(dataId, attributeName, answerByData, primaryKeys);
             this.dataTypeList.add(dt);
         }
     }

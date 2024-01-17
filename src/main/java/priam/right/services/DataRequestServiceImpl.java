@@ -1,5 +1,6 @@
 package priam.right.services;
 
+import org.hibernate.mapping.PrimaryKey;
 import org.springframework.stereotype.Service;
 import priam.right.dto.*;
 import priam.right.entities.*;
@@ -214,12 +215,10 @@ public class DataRequestServiceImpl implements DataRequestService {
                 datas.add(data);
 
                 String dataTypeName= data.getData_type_name();
-                String primaryKeyName= data.getPrimary_key_name();
-                String primaryKeyValue= dataRequest.getPrimaryKeyValue();
                 String attribute = data.getAttribute();
                 String newValue= dataRequest.getNewValue();
 
-                String dsId = dataRequest.getDataSubject().getIdRef();
+                String dsId = dataRequest.getDataSubject().getReferenceId();
 
                 List<Map<String, String>> parameters = new ArrayList<>();
 
@@ -228,8 +227,6 @@ public class DataRequestServiceImpl implements DataRequestService {
                 parameter.put("newValue", newValue);
                 parameter.put("dsId", dsId);
                 parameter.put("dataTypeName", dataTypeName);
-                parameter.put("primaryKeyName", primaryKeyName);
-                parameter.put("primaryKeyValue", primaryKeyValue);
 
                 parameters.add(parameter);
 
@@ -276,12 +273,10 @@ public class DataRequestServiceImpl implements DataRequestService {
                 datas.add(data);
 
                 String dataTypeName= data.getData_type_name();
-                String primaryKeyName= data.getPrimary_key_name();
-                String primaryKeyValue= dataRequest.getPrimaryKeyValue();
                 String attribute = data.getAttribute();
 
 
-                String dsId = dataRequest.getDataSubject().getIdRef()/*getId()*/;
+                String dsId = dataRequest.getDataSubject().getReferenceId()/*getId()*/;
 
                 List<Map<String, String>> parameters = new ArrayList<>();
 
@@ -289,8 +284,6 @@ public class DataRequestServiceImpl implements DataRequestService {
                 parameter.put("attribute", attribute);
                 parameter.put("dsId", dsId);
                 parameter.put("dataTypeName", dataTypeName);
-                parameter.put("primaryKeyName", primaryKeyName);
-                parameter.put("primaryKeyValue", primaryKeyValue);
 
                 parameters.add(parameter);
 
@@ -324,7 +317,6 @@ public class DataRequestServiceImpl implements DataRequestService {
         dataRequest.setResponse(false);
         dataRequest.setIsolated(true);
         dataRequest.setNewValue(null);
-        dataRequest.setPrimaryKeyValue(null);
 
         DataRequest result = dataRequestRepository.save(dataRequest);
 
@@ -412,6 +404,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         // DataRequest information
         DataRequest dataRequest = dataRequestRepository.getById(requestId);
         response.setRequestId(dataRequest.getRequestId());
+        response.setClaim(dataRequest.getClaim());
         response.setResponse(dataRequest.isResponse());
         response.setIsolated(dataRequest.isIsolated());
         response.setIssuedAt(dataRequest.getIssuedAt());
@@ -421,14 +414,24 @@ public class DataRequestServiceImpl implements DataRequestService {
         // DataSubject information
         DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
         DSCategoryResponseDTO category = actorRestClient.getDSCategoryById(dataRequest.getDataSubjectId());
-        response.setDataSubject(dataSubject.getId(), dataSubject.getIdRef(), category.getDataSubjectCategoryName());
+        response.setDataSubject(dataSubject.getDataSubjectId(), dataSubject.getReferenceId(), category.getDataSubjectCategoryName());
 
         // Data information
         List<DataRequestData> dataRequestDatas = dataRequestDataRepository.findDataRequestDataByDataRequestId(requestId);
         dataRequestDatas.forEach(drd -> {
             Data data = dataRestClient.getData(drd.getDataId());
             String dataTypeName = dataRestClient.getDataTypeNameByDataTypeId(data.getData_type_id());
-            response.addData(dataTypeName, data.getId(), data.getAttribute(), drd.isAnswer());
+            // Primary keys
+            Map<String, String> primaryKeys = new HashMap<>();
+            if(dataRequest.getRequestType() == DataRequestType.Rectification || dataRequest.getRequestType() == DataRequestType.Erasure) {
+                ArrayList<DataRequestPrimaryKey> list = new ArrayList<>(this.dataRequestPrimaryKeyRepository.findByDataRequestId(requestId));
+                list.forEach(primaryKey -> {
+                    Data d = dataRestClient.getData(primaryKey.getPrimaryKeyId());
+                    primaryKeys.put(d.getAttribute(), primaryKey.getPrimaryKeyValue());
+                });
+            }
+
+            response.addData(dataTypeName, data.getId(), data.getAttribute(), drd.isAnswer(), primaryKeys);
         });
 
         return response;

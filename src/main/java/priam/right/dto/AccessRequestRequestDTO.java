@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccessRequestRequestDTO {
-    private String idRef;
+    private String referenceId;
     private String claim;
     private ArrayList<Integer> listOfSelectedDataId;
 }
