@@ -8,8 +8,8 @@ import priam.right.enums.Source;
 @NoArgsConstructor
 @lombok.Data
 public class Data {
-    private int id;
-    private String attribute;
+    private int dataId;
+    private String attributeName;
     private boolean isPersonal;
     private String Category;
     private Source source;

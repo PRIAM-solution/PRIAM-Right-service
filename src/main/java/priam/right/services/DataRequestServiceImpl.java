@@ -1,6 +1,5 @@
 package priam.right.services;
 
-import org.hibernate.mapping.PrimaryKey;
 import org.springframework.stereotype.Service;
 import priam.right.dto.*;
 import priam.right.entities.*;
@@ -77,7 +76,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         DataRequest result = dataRequestRepository.save(dataRequest);
 
         // DataRequestData
-        DataRequestData drd = new DataRequestData(result.getRequestId(), data.getId(), false);
+        DataRequestData drd = new DataRequestData(result.getRequestId(), data.getDataId(), false);
         dataRequestDataRepository.save(drd);
 
         ArrayList<Data> datas = new ArrayList<>();
@@ -91,6 +90,39 @@ public class DataRequestServiceImpl implements DataRequestService {
 
         // Response DTO
         DataRequestResponseDTO response = new DataRequestResponseDTO(result, datas, primaryKeys);
+        return response;
+    }
+
+    @Override
+    public DataRequestResponseDTO saveAccessRequest(AccessRequestRequestDTO accessRequestRequestDTO) {
+        DataRequest dataRequest = new DataRequest();
+        DataSubject dataSubject = actorRestClient.getDataSubject(accessRequestRequestDTO.getDataSubjectId());
+
+        dataRequest.setDataSubject(dataSubject);
+        dataRequest.setIssuedAt(new Date());
+        dataRequest.setClaim(accessRequestRequestDTO.getDataRequestClaim());
+        dataRequest.setRequestType(DataRequestType.Access);
+
+        dataRequest.setResponse(false);
+        dataRequest.setIsolated(true);
+        dataRequest.setNewValue(null);
+
+        DataRequest result = dataRequestRepository.save(dataRequest);
+
+        ArrayList<Data> datas = new ArrayList<>();
+
+
+        // Save all DataRequestData
+        accessRequestRequestDTO.getData().forEach(dataId -> {
+            DataRequestData drd = new DataRequestData(result.getRequestId(), dataId.getDataId(), false);
+            dataRequestDataRepository.save(drd);
+            System.out.println(dataRestClient.getData(dataId.getDataId()));
+            Data data = dataRestClient.getData(dataId.getDataId());
+            datas.add(data);
+        });
+
+        // Response DTO
+        DataRequestResponseDTO response = new DataRequestResponseDTO(result, datas, null);
         return response;
     }
 
@@ -215,7 +247,7 @@ public class DataRequestServiceImpl implements DataRequestService {
                 datas.add(data);
 
                 String dataTypeName= data.getData_type_name();
-                String attribute = data.getAttribute();
+                String attribute = data.getAttributeName();
                 String newValue= dataRequest.getNewValue();
 
                 String dsId = dataRequest.getDataSubject().getReferenceId();
@@ -273,7 +305,7 @@ public class DataRequestServiceImpl implements DataRequestService {
                 datas.add(data);
 
                 String dataTypeName= data.getData_type_name();
-                String attribute = data.getAttribute();
+                String attribute = data.getAttributeName();
 
 
                 String dsId = dataRequest.getDataSubject().getReferenceId()/*getId()*/;
@@ -302,31 +334,6 @@ public class DataRequestServiceImpl implements DataRequestService {
         // Response DTO
         DataRequestResponseDTO response = new DataRequestResponseDTO(dataRequest, datas, null);
         return response;
-    }
-
-    @Override
-    public void saveAccessRequest(String idRef, String claim, ArrayList<Integer> listOfSelectedDataId) {
-        DataRequest dataRequest = new DataRequest();
-        DataSubject dataSubject = actorRestClient.getDataSubjectByRef(idRef);
-
-        dataRequest.setDataSubject(dataSubject);
-        dataRequest.setIssuedAt(new Date());
-        dataRequest.setClaim(claim);
-        dataRequest.setRequestType(DataRequestType.Access);
-
-        dataRequest.setResponse(false);
-        dataRequest.setIsolated(true);
-        dataRequest.setNewValue(null);
-
-        DataRequest result = dataRequestRepository.save(dataRequest);
-
-        // Save all DataRequestData
-        listOfSelectedDataId.forEach(dataId -> {
-            DataRequestData drd = new DataRequestData();
-            drd.setDataRequestId(result.getRequestId());
-            drd.setDataId(dataId);
-            dataRequestDataRepository.save(drd);
-        });
     }
 
     @Override
@@ -427,11 +434,11 @@ public class DataRequestServiceImpl implements DataRequestService {
                 ArrayList<DataRequestPrimaryKey> list = new ArrayList<>(this.dataRequestPrimaryKeyRepository.findByDataRequestId(requestId));
                 list.forEach(primaryKey -> {
                     Data d = dataRestClient.getData(primaryKey.getPrimaryKeyId());
-                    primaryKeys.put(d.getAttribute(), primaryKey.getPrimaryKeyValue());
+                    primaryKeys.put(d.getAttributeName(), primaryKey.getPrimaryKeyValue());
                 });
             }
 
-            response.addData(dataTypeName, data.getId(), data.getAttribute(), drd.isAnswer(), primaryKeys);
+            response.addData(dataTypeName, data.getDataId(), data.getAttributeName(), drd.isAnswer(), primaryKeys);
         });
 
         return response;

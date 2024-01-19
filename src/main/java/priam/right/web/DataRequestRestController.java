@@ -37,13 +37,19 @@ public class DataRequestRestController {
         return dataRequestService.getDataRequest(id);
     }
 
+    @PostMapping(path = "/right/accessRequest")
+    public DataRequestResponseDTO saveAccessRequest(@RequestBody AccessRequestRequestDTO accessRequestRequestDTO) {
+        System.out.println(accessRequestRequestDTO.getData());
+        return dataRequestService.saveAccessRequest(accessRequestRequestDTO);
+    }
+
     @PostMapping(path = "/right/rectificationRequest")
-    public DataRequestResponseDTO RectificationRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
+    public DataRequestResponseDTO saveRectificationRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
         return dataRequestService.saveDataRequest(dataRequestDTO, DataRequestType.Rectification);
     }
 
     @PostMapping(path = "/right/erasureRequest")
-    public DataRequestResponseDTO ErasureRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
+    public DataRequestResponseDTO saveErasureRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
         return dataRequestService.saveDataRequest(dataRequestDTO, DataRequestType.Erasure);
     }
 
@@ -70,11 +76,6 @@ public class DataRequestRestController {
     @GetMapping(path = "/isAccepted")
     public boolean isDataRequestAcceptedForDataId(@RequestParam int dataSubjectId, @RequestParam int dataId) {
         return dataRequestService.isAccepted(dataSubjectId, dataId);
-    }
-
-    @PostMapping(path = "/right/recordAccessRequest")
-    public void recordAccessRequest(@RequestBody AccessRequestRequestDTO accessRequestRequestDTO) {
-        dataRequestService.saveAccessRequest(accessRequestRequestDTO.getReferenceId(), accessRequestRequestDTO.getClaim(), accessRequestRequestDTO.getListOfSelectedDataId());
     }
 
     @GetMapping(path = "right/requestList")

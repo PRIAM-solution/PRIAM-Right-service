@@ -1,10 +1,7 @@
 package priam.right.services;
 
 
-import priam.right.dto.DataRequestRequestDTO;
-import priam.right.dto.DataRequestResponseDTO;
-import priam.right.dto.RequestDetailDTO;
-import priam.right.dto.RequestListDTO;
+import priam.right.dto.*;
 import priam.right.entities.RequestAnswer;
 import priam.right.enums.DataRequestType;
 
@@ -28,7 +25,7 @@ public interface DataRequestService {
     List<DataRequestResponseDTO> getListErasureRequests();
     List<Map<String, String>> DataAccess(int idDS, String dataTypeName, List<String> attributes);
 
-    void saveAccessRequest(String idRef, String claim, ArrayList<Integer> listOfSelectedDataId);
+    DataRequestResponseDTO saveAccessRequest(AccessRequestRequestDTO accessRequestRequestDTO);
 
     boolean isAccepted(int dataSubjectId, int dataId);
 

@@ -2,6 +2,7 @@ package priam.right.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import priam.right.entities.Data;
 
 import java.util.ArrayList;
 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccessRequestRequestDTO {
-    private String referenceId;
-    private String claim;
-    private ArrayList<Integer> listOfSelectedDataId;
+    private int dataSubjectId;
+    private String dataRequestClaim;
+    private ArrayList<Data> data;
 }
