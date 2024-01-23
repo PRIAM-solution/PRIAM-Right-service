@@ -16,11 +16,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DataRequestResponseDTO {
-    private int requestId;
-    private String claim;
-    private Date issuedAt;
+    private int dataRequestId;
+    private String dataRequestClaim;
     private String newValue;
-    private boolean isIsolated;
+    private boolean isIsolated; //TODO: check if this is needed
     private DataRequestType requestType;
 
     private List<Data> datas = new ArrayList<>();
@@ -31,12 +30,11 @@ public class DataRequestResponseDTO {
     private boolean response;
 
     public DataRequestResponseDTO(DataRequest dataRequest, List<Data> datas, HashMap<Integer, String> primaryKeys) {
-        this.requestId = dataRequest.getRequestId();
-        this.claim = dataRequest.getClaim();
-        this.issuedAt = dataRequest.getIssuedAt();
+        this.dataRequestId = dataRequest.getDataRequestId();
+        this.dataRequestClaim = dataRequest.getDataRequestClaim();
         this.newValue = dataRequest.getNewValue();
         this.isIsolated = dataRequest.isIsolated();
-        this.requestType = dataRequest.getRequestType();
+        this.requestType = dataRequest.getDataRequestType();
         this.dataSubject = dataRequest.getDataSubject();
         this.response = dataRequest.isResponse();
 

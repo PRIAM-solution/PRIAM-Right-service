@@ -1,12 +1,11 @@
 package priam.right.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import priam.right.entities.RequestAnswer;
+import priam.right.entities.DataRequestAnswer;
 
 import java.util.Optional;
 
-public interface RequestAnswerRepository extends JpaRepository<RequestAnswer, Integer> {
+public interface RequestAnswerRepository extends JpaRepository<DataRequestAnswer, Integer> {
 
-    Optional<RequestAnswer> findRequestAnswerByRequestId(Long requestId);
+    Optional<DataRequestAnswer> findRequestAnswerByRequestId(int requestId);
 }

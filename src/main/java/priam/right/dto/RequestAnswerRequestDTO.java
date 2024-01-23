@@ -10,11 +10,11 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestAnswerRequestDTO {
-    private int idAnswer;
+    private int requestAnswerId;
     @Getter
     private boolean answer;
     private String claimAnswer;
     private Date claimDate;
 
-    private int idDataRequest;
+    private int dataRequestId;
 }

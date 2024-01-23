@@ -2,6 +2,7 @@ package priam.right.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @lombok.Data
@@ -9,11 +10,11 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @IdClass(DataRequestDataKey.class)
-@Table(name="data_request_data")
+@Table(name = "DataRequest_Data")
 public class DataRequestData {
     @Id
     private int dataRequestId;
     @Id
     private int dataId;
-    private boolean answer = false;
+    private boolean answerByData = false;
 }

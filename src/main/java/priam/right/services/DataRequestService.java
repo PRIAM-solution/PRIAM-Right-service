@@ -2,28 +2,27 @@ package priam.right.services;
 
 
 import priam.right.dto.*;
-import priam.right.entities.RequestAnswer;
+import priam.right.entities.DataRequestAnswer;
 import priam.right.enums.DataRequestType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public interface DataRequestService {
 
-    DataRequestResponseDTO getDataRequest(int id);
+    DataRequestResponseDTO getDataRequest(int dataRequestId);
 
-    List<DataRequestResponseDTO> getListDataRequestByDataSubjectId(int id);
+    List<DataRequestResponseDTO> getListDataRequestByDataSubjectId(int dataSubjectId);
 
     DataRequestResponseDTO saveDataRequest(DataRequestRequestDTO dataRequestRequestDTO, DataRequestType dataRequestType);
 
-    DataRequestResponseDTO RectificationAnswer(int idRequest, boolean answer, String claim);
+    DataRequestResponseDTO RectificationAnswer(int dataRequestId, boolean answer, String dataRequestClaim);
 
-    public DataRequestResponseDTO ErasureAnswer(int idDataRequest, boolean answer, String claimAnswer);
+    DataRequestResponseDTO ErasureAnswer(int dataRequestId, boolean answer, String claimAnswer);
     List<DataRequestResponseDTO> getListRectificationRequests();
 
     List<DataRequestResponseDTO> getListErasureRequests();
-    List<Map<String, String>> DataAccess(int idDS, String dataTypeName, List<String> attributes);
+    List<Map<String, String>> DataAccess(int dataSubjectId, String dataTypeName, List<String> attributes);
 
     DataRequestResponseDTO saveAccessRequest(AccessRequestRequestDTO accessRequestRequestDTO);
 
@@ -31,6 +30,6 @@ public interface DataRequestService {
 
     List<RequestListDTO> getDataRequestByFilters(List<String> listOfSelectedTypeDataRequests, List<String> listOfSelectedStatus, List<String> listOfSelectedDataSubjectCategories);
 
-    RequestDetailDTO getRequestDataDetail(int requestId);
-    RequestAnswer getRequestAnswerByDataRequestId(int requestId);
+    RequestDetailDTO getRequestDataDetail(int dataRequestId);
+    DataRequestAnswer getRequestAnswerByDataRequestId(int dataRequestId);
 }

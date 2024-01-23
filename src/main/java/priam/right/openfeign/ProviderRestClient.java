@@ -20,7 +20,7 @@ public interface ProviderRestClient {
     void forgotten(@RequestBody List<Map<String,String>> parameters);
 
     @GetMapping(path = "/api/dataAccessRight")
-    List<Map<String, String>> getPersonalDataValues(@RequestParam int dsId, @RequestParam String dataTypeName, @RequestParam List<String> attributes);
+    List<Map<String, String>> getPersonalDataValues(@RequestParam int dataSubjectId, @RequestParam String dataTypeName, @RequestParam List<String> attributes);
 
     //@PostMapping(path = "/api/rectification/{patientId}/{attribute}")
     //void eraseData(@PathVariable String attribute, @PathVariable int patientId);

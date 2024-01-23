@@ -1,30 +1,23 @@
 package priam.right.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @lombok.Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class DataSubject {
-
-    @lombok.Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    private static class DataSubjectCategory {
-        private int dataSubjectCategoryId;
-        private String dataSubjectCategoryName;
-        private String locationId;
-    }
+    @Id
     private int dataSubjectId;
-    private String referenceId;
+    private String idRef;
+    private String username;
+    private String password;
     private int age;
-    private DataSubjectCategory dataSubjectCategory;
 
-    public int getDataSubjectCategoryId() {
-        return dataSubjectCategory.dataSubjectCategoryId;
-    }
-    public String getDataSubjectCategoryName() {
-        return dataSubjectCategory.dataSubjectCategoryName;
-    }
+    @ManyToOne
+    private DataSubjectCategory dataSubjectCategory;
 }

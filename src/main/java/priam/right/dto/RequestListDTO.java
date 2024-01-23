@@ -9,9 +9,9 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestListDTO {
-    private int requestId;
-    private DataRequestType requestType;
-    private Date issuedAt;
+    private int dataRequestId;
+    private DataRequestType dataRequestType;
+    private Date dataRequestIssuedAt;
     private boolean response;
-    private DSCategoryResponseDTO dataSubjectCategory;
+    private DataSubjectCategoryResponseDTO dataSubjectCategory;
 }

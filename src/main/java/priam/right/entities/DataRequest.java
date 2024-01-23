@@ -11,22 +11,20 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="data_request")
+@Table(name = "DataRequest")
 public class DataRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int requestId;
-    private String claim;
-    private Date issuedAt;
+    private int dataRequestId;
+    private String dataRequestClaim;
+    private Date dataRequestIssuedAt;
     private String newValue;
-
-    private boolean isIsolated;
-
-    @Enumerated(EnumType.STRING)
-    private DataRequestType requestType;
+    private DataRequestType dataRequestType;
     private int dataSubjectId;
     @Transient
     private DataSubject dataSubject;
 
+    //TODO: not in the sql script
+    private boolean isIsolated;
     private boolean response;
 }
