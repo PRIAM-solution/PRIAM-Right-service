@@ -173,7 +173,7 @@ public class DataRequestServiceImpl implements DataRequestService {
     @Override
     public List<DataRequestResponseDTO> getListRectificationRequests() {
         List<DataRequestResponseDTO> response = new ArrayList<>();
-        List<DataRequest> dataRequestList = dataRequestRepository.findByRequestType(DataRequestType.RECTIFICATION);
+        List<DataRequest> dataRequestList = dataRequestRepository.findByDataRequestType(DataRequestType.RECTIFICATION);
 
         for (DataRequest dataRequest : dataRequestList)
         {
@@ -198,7 +198,7 @@ public class DataRequestServiceImpl implements DataRequestService {
     @Override
     public List<DataRequestResponseDTO> getListErasureRequests() {
         List<DataRequestResponseDTO> response = new ArrayList<>();
-        List<DataRequest> dataRequestList = dataRequestRepository.findByRequestType(DataRequestType.ERASURE);
+        List<DataRequest> dataRequestList = dataRequestRepository.findByDataRequestType(DataRequestType.ERASURE);
 
         for (DataRequest dataRequest : dataRequestList)
         {
@@ -363,7 +363,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         else {
             filteredStatusList = new ArrayList<>();
             filteredTypeList.forEach(dataRequest -> {
-                Optional<DataRequestAnswer> answer = requestAnswerRepository.findRequestAnswerByRequestId(dataRequest.getDataRequestId());
+                Optional<DataRequestAnswer> answer = requestAnswerRepository.findDataRequestAnswerByDataRequestAnswerId(dataRequest.getDataRequestId());
                 // First case : If looking for validated or refused requests
                 if(answer.isPresent()) {
                     AnswerType answerType = answer.get().getAnswer();
@@ -446,7 +446,7 @@ public class DataRequestServiceImpl implements DataRequestService {
 
     @Override
     public DataRequestAnswer getRequestAnswerByDataRequestId(int dataRequestId) {
-        Optional<DataRequestAnswer> res = requestAnswerRepository.findRequestAnswerByRequestId(dataRequestId);
+        Optional<DataRequestAnswer> res = requestAnswerRepository.findDataRequestAnswerByDataRequestAnswerId(dataRequestId);
         if(res.isPresent())
             return res.get();
         else

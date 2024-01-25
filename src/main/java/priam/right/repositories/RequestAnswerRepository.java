@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface RequestAnswerRepository extends JpaRepository<DataRequestAnswer, Integer> {
 
-    Optional<DataRequestAnswer> findRequestAnswerByRequestId(int requestId);
+    Optional<DataRequestAnswer> findDataRequestAnswerByDataRequestAnswerId(int requestId);
 }

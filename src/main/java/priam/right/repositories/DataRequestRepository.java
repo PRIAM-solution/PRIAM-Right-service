@@ -11,7 +11,7 @@ public interface DataRequestRepository extends JpaRepository<DataRequest, Intege
 
     List<DataRequest> findByDataSubjectId(int dataSubjectId);
 
-    List<DataRequest> findByRequestType(DataRequestType dataRequestType);
+    List<DataRequest> findByDataRequestType(DataRequestType dataRequestType);
 
     @Query(value = "SELECT * FROM DataRequest WHERE DataRequest.request_type IN :types",
             nativeQuery = true)
