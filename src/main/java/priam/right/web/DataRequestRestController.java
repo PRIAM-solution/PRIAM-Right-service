@@ -58,6 +58,11 @@ public class DataRequestRestController {
         return dataRequestService.saveRequestAnswer(requestAnswer);
     }
 
+    @GetMapping(path = "right/answer/{dataRequestId}")
+    public DataRequestAnswer getRequestAnswer(@PathVariable int dataRequestId) {
+        return dataRequestService.getRequestAnswerByDataRequestId(dataRequestId);
+    }
+
     @GetMapping(path = "/requestsRectification/{dataSubjectId}")
     public List<DataRequestResponseDTO> getListDataRequestByDataSubject(@PathVariable int dataSubjectId) {
         return dataRequestService.getListDataRequestByDataSubjectId(dataSubjectId);
@@ -82,10 +87,5 @@ public class DataRequestRestController {
     @GetMapping(path = "right/requestDetail/{dataRequestId}")
     public RequestDetailDTO getRequestDetail(@PathVariable int dataRequestId) {
         return dataRequestService.getRequestDataDetail(dataRequestId);
-    }
-
-    @GetMapping(path = "right/answerOfRequest/{dataRequestId}")
-    public DataRequestAnswer getRequestAnswer(@PathVariable int dataRequestId) {
-        return dataRequestService.getRequestAnswerByDataRequestId(dataRequestId);
     }
 }
