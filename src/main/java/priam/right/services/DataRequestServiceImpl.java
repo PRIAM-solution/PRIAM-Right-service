@@ -1,5 +1,6 @@
 package priam.right.services;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import priam.right.dto.*;
 import priam.right.entities.*;
@@ -27,6 +28,7 @@ import java.util.*;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class DataRequestServiceImpl implements DataRequestService {
     private DataRequestRepository dataRequestRepository;
     private DataRequestMapper dataRequestMapper;
@@ -36,19 +38,6 @@ public class DataRequestServiceImpl implements DataRequestService {
     private RequestAnswerRepository requestAnswerRepository;
     private DataRequestDataRepository dataRequestDataRepository;
     private DataRequestPrimaryKeyRepository dataRequestPrimaryKeyRepository;
-
-    public DataRequestServiceImpl(DataRequestRepository dataRequestRepository, DataRequestMapper dataRequestMapper,
-                                  ProviderRestClient providerRestClient, DataRestClient dataRestClient, ActorRestClient actorRestClient, RequestAnswerRepository requestAnswerRepository,
-                                  DataRequestDataRepository dataRequestDataRepository, DataRequestPrimaryKeyRepository dataRequestPrimaryKeyRepository) {
-        this.dataRequestRepository = dataRequestRepository;
-        this.dataRequestMapper = dataRequestMapper;
-        this.dataRestClient = dataRestClient;
-        this.actorRestClient = actorRestClient;
-        this.providerRestClient = providerRestClient;
-        this.requestAnswerRepository = requestAnswerRepository;
-        this.dataRequestDataRepository = dataRequestDataRepository;
-        this.dataRequestPrimaryKeyRepository = dataRequestPrimaryKeyRepository;
-    }
 
     public List<Map<String, String>> DataAccess(int idDS, String dataTypeName, List<String> attributes){
         System.out.println(providerRestClient.getPersonalDataValues(idDS, dataTypeName, attributes));
@@ -116,7 +105,6 @@ public class DataRequestServiceImpl implements DataRequestService {
         accessRequestRequestDTO.getData().forEach(dataId -> {
             DataRequestData drd = new DataRequestData(result.getRequestId(), dataId.getDataId(), false);
             dataRequestDataRepository.save(drd);
-            System.out.println(dataRestClient.getData(dataId.getDataId()));
             Data data = dataRestClient.getData(dataId.getDataId());
             datas.add(data);
         });
@@ -221,123 +209,86 @@ public class DataRequestServiceImpl implements DataRequestService {
     }
 
     @Override
-    public DataRequestResponseDTO RectificationAnswer(int idDataRequest, boolean answer, String claimAnswer){
-        //Code redondant, de la fonction getDataRequest (pas même type de retour
-        DataRequest dataRequest = dataRequestRepository.getById(idDataRequest);
-        ArrayList<Data> datas = new ArrayList<>();
-
-        DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
-        dataRequest.setDataSubject(dataSubject);
-        dataRequest.setResponse(true);
-
-        RequestAnswer rectificationAnswer = new RequestAnswer();
-        if(answer == true){
-
-            rectificationAnswer.setAnswer(AnswerType.FULL);
-            rectificationAnswer.setClaim(claimAnswer);
-            rectificationAnswer.setDataRequest(dataRequest);
-            rectificationAnswer.setClaimDate(new Date());
-            requestAnswerRepository.save(rectificationAnswer);
-
-            // Get all Data object
-            List<Integer> dataIds = new ArrayList<>();
-            dataIds = dataRequestDataRepository.findDataIdsByDataRequestId(dataRequest.getRequestId());
-            dataIds.forEach(dataId -> {
-                Data data = dataRestClient.getData(dataId);
-                datas.add(data);
-
-                String dataTypeName= data.getData_type_name();
-                String attribute = data.getAttributeName();
-                String newValue= dataRequest.getNewValue();
-
-                String dsId = dataRequest.getDataSubject().getReferenceId();
-
-                List<Map<String, String>> parameters = new ArrayList<>();
-
-                Map<String, String> parameter = new HashMap<>();
-                parameter.put("attribute", attribute);
-                parameter.put("newValue", newValue);
-                parameter.put("dsId", dsId);
-                parameter.put("dataTypeName", dataTypeName);
-
-                parameters.add(parameter);
-
-                providerRestClient.rectification(parameters);
-            });
-
-        }else{
-            rectificationAnswer.setAnswer(AnswerType.REFUSED);
-            rectificationAnswer.setClaim(claimAnswer);
-            rectificationAnswer.setDataRequest(dataRequest);
-            rectificationAnswer.setClaimDate(new Date());
-            requestAnswerRepository.save(rectificationAnswer);
-        }
-        dataRequest.setIsolated(false);
-
-        // Response DTO
-        DataRequestResponseDTO response = new DataRequestResponseDTO(dataRequest, datas, null);
-        return response;
+    public RequestAnswer getRequestAnswer(long requestId) {
+        Optional<RequestAnswer> res = requestAnswerRepository.findRequestAnswerByDataRequestId(requestId);
+        return res.orElse(null);
     }
-
     @Override
-    public DataRequestResponseDTO ErasureAnswer(int idDataRequest, boolean answer, String claimAnswer){
-        DataRequest dataRequest = dataRequestRepository.getById(idDataRequest);
-        ArrayList<Data> datas = new ArrayList<>();
+    public RequestAnswer saveRequestAnswer(RequestAnswerRequestDTO requestAnswerRequestDTO) {
+        DataRequest dataRequest = dataRequestRepository.getById(requestAnswerRequestDTO.getRequestId());
 
-        DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
-        dataRequest.setDataSubject(dataSubject);
-        dataRequest.setResponse(true);
+        RequestAnswer requestAnswer = new RequestAnswer();
+        requestAnswer.setDataRequestId((long) requestAnswerRequestDTO.getRequestId());
+        requestAnswer.setAnswerClaim(requestAnswerRequestDTO.getProviderClaim());
+        requestAnswer.setClaimDate(new Date());
 
-        RequestAnswer erasureAnswer = new RequestAnswer();
-        if(answer == true){
+        ArrayList<DataRequestData> drdList = new ArrayList<>(dataRequestDataRepository.findDataRequestDataByDataRequestId(requestAnswerRequestDTO.getRequestId()));
 
-            erasureAnswer.setAnswer(AnswerType.FULL);
-            erasureAnswer.setClaim(claimAnswer);
-            erasureAnswer.setDataRequest(dataRequest);
-            erasureAnswer.setClaimDate(new Date());
-            requestAnswerRepository.save(erasureAnswer);
+        // Set answer boolean for each data request data
+        // For rectification and erasure, only one data is involved
+        if(dataRequest.getRequestType().equals(DataRequestType.Rectification) || dataRequest.getRequestType().equals(DataRequestType.Erasure)) {
+            DataRequestData drd = drdList.get(0);
+            drd.setAnswer(requestAnswerRequestDTO.isAnswer());
+            dataRequestDataRepository.save(drd);
 
-            // Get all Data object
-            List<Integer> dataIds = new ArrayList<>();
-            dataIds = dataRequestDataRepository.findDataIdsByDataRequestId(dataRequest.getRequestId());
-            dataIds.forEach(dataId -> {
-                Data data = dataRestClient.getData(dataId);
-                datas.add(data);
+            requestAnswer.setAnswerType(requestAnswerRequestDTO.isAnswer() ? AnswerType.FULL : AnswerType.REFUSED);
 
-                String dataTypeName= data.getData_type_name();
-                String attribute = data.getAttributeName();
+            // Apply the rectification or the erasure in the provider application
+            Data data = dataRestClient.getData(drd.getDataId());
 
+            String dataTypeName= data.getData_type_name();
+            String attribute = data.getAttributeName();
+            String newValue= dataRequest.getNewValue();
+            DataSubject dataSubject = actorRestClient.getDataSubject(dataRequest.getDataSubjectId());
 
-                String dsId = dataRequest.getDataSubject().getReferenceId()/*getId()*/;
+            String dsId = dataSubject.getReferenceId();
 
-                List<Map<String, String>> parameters = new ArrayList<>();
+            List<Map<String, String>> parameters = new ArrayList<>();
 
-                Map<String, String> parameter = new HashMap<>();
-                parameter.put("attribute", attribute);
-                parameter.put("dsId", dsId);
-                parameter.put("dataTypeName", dataTypeName);
+            Map<String, String> parameter = new HashMap<>();
+            parameter.put("attribute", attribute);
+            parameter.put("dsId", dsId);
+            parameter.put("dataTypeName", dataTypeName);
+            if(dataRequest.getRequestType().equals(DataRequestType.Rectification))
+                parameter.put("newValue", newValue);
 
-                parameters.add(parameter);
+            parameters.add(parameter);
+            if(!requestAnswer.getAnswerType().equals(AnswerType.REFUSED)) {
+                if(dataRequest.getRequestType().equals(DataRequestType.Rectification))
+                    providerRestClient.rectification(parameters);
+                else if(dataRequest.getRequestType().equals(DataRequestType.Erasure))
+                    providerRestClient.forgotten(parameters);
+            }
 
-                providerRestClient.forgotten(parameters);
-            });
-
-        }else{
-            erasureAnswer.setAnswer(AnswerType.REFUSED);
-            erasureAnswer.setClaim(claimAnswer);
-            erasureAnswer.setDataRequest(dataRequest);
-            erasureAnswer.setClaimDate(new Date());
-            requestAnswerRepository.save(erasureAnswer);
         }
-        dataRequest.setIsolated(false);
-
-        // Response DTO
-        DataRequestResponseDTO response = new DataRequestResponseDTO(dataRequest, datas, null);
-        return response;
+        else if (dataRequest.getRequestType().equals(DataRequestType.Access)) {
+            List<Integer> dataIdList = requestAnswerRequestDTO.getData().stream().map(d -> d.getDataId()).toList();
+            // We look if the dataRequestData is present in the datas send in the request
+            drdList.forEach(drd -> {
+                if(dataIdList.contains(drd.getDataId())) {
+                    drd.setAnswer(true);
+                }
+                else {
+                    drd.setAnswer(false);
+                }
+            });
+            if(drdList.size() == requestAnswerRequestDTO.getData().size()) {
+                requestAnswer.setAnswerType(AnswerType.FULL);
+            }
+            else if(requestAnswerRequestDTO.getData().size() > 0) {
+                requestAnswer.setAnswerType(AnswerType.PARTIAL);
+            }
+            else {
+                requestAnswer.setAnswerType(AnswerType.REFUSED);
+            }
+        }
+        // Save request answer
+        return requestAnswerRepository.save(requestAnswer);
     }
 
     @Override
     public boolean isAccepted(int dataSubjectId, int dataId) {
+        System.out.println(dataId);
         Optional<Boolean> isAccepted = dataRequestDataRepository.isDataAcceptedByDataSubjectIdAndDataId(dataSubjectId, dataId);
         return isAccepted.orElse(false);
     }
@@ -363,10 +314,10 @@ public class DataRequestServiceImpl implements DataRequestService {
         else {
             filteredStatusList = new ArrayList<>();
             filteredTypeList.forEach(dataRequest -> {
-                Optional<RequestAnswer> answer = requestAnswerRepository.findRequestAnswerByRequestId((long) dataRequest.getRequestId());
+                Optional<RequestAnswer> answer = requestAnswerRepository.findRequestAnswerByDataRequestId((long) dataRequest.getRequestId());
                 // First case : If looking for validated or refused requests
                 if(answer.isPresent()) {
-                    AnswerType answerType = answer.get().getAnswer();
+                    AnswerType answerType = answer.get().getAnswerType();
                     if(listOfSelectedStatus.contains(answerType.toString())) {
                         filteredStatusList.add(dataRequest);
                     } // If we just want completed answer (so no difference between full or partial answer)
@@ -446,7 +397,7 @@ public class DataRequestServiceImpl implements DataRequestService {
 
     @Override
     public RequestAnswer getRequestAnswerByDataRequestId(int requestId) {
-        Optional<RequestAnswer> res = requestAnswerRepository.findRequestAnswerByRequestId((long) requestId);
+        Optional<RequestAnswer> res = requestAnswerRepository.findRequestAnswerByDataRequestId((long) requestId);
         if(res.isPresent())
             return res.get();
         else

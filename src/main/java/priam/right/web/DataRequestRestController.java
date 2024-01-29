@@ -1,5 +1,6 @@
 package priam.right.web;
 
+import org.bouncycastle.cert.ocsp.Req;
 import org.springframework.web.bind.annotation.*;
 import priam.right.dto.*;
 import priam.right.entities.RequestAnswer;
@@ -39,7 +40,6 @@ public class DataRequestRestController {
 
     @PostMapping(path = "/right/accessRequest")
     public DataRequestResponseDTO saveAccessRequest(@RequestBody AccessRequestRequestDTO accessRequestRequestDTO) {
-        System.out.println(accessRequestRequestDTO.getData());
         return dataRequestService.saveAccessRequest(accessRequestRequestDTO);
     }
 
@@ -53,14 +53,13 @@ public class DataRequestRestController {
         return dataRequestService.saveDataRequest(dataRequestDTO, DataRequestType.Erasure);
     }
 
-    @PostMapping(path = "/answerRectification")
-    public DataRequestResponseDTO saveRectificationAnswer(@RequestBody RequestAnswerRequestDTO requestAnswer) {
-        return dataRequestService.RectificationAnswer(requestAnswer.getIdDataRequest(),requestAnswer.isAnswer(),requestAnswer.getClaimAnswer());
+    @GetMapping(path = "/right/answer/{requestId}")
+    public RequestAnswer getRequestAnswer(@PathVariable long requestId) {
+        return dataRequestService.getRequestAnswer(requestId);
     }
-
-    @PostMapping(path = "/answerErasure")
-    public DataRequestResponseDTO saveErasureAnswer(@RequestBody RequestAnswerRequestDTO requestAnswer) {
-        return dataRequestService.ErasureAnswer(requestAnswer.getIdDataRequest(),requestAnswer.isAnswer(),requestAnswer.getClaimAnswer());
+    @PostMapping(path = "/right/answer")
+    public RequestAnswer saveRequestAnswer(@RequestBody RequestAnswerRequestDTO requestAnswer) {
+        return dataRequestService.saveRequestAnswer(requestAnswer);
     }
 
     @GetMapping(path = "/requestsRectification/{id}")

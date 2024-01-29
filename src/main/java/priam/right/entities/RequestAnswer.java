@@ -14,10 +14,10 @@ public class RequestAnswer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int answerId;
-    private AnswerType answer;
-    private String claim;
+    private AnswerType answerType;
+    private String answerClaim;
     private Date claimDate;
-    private Long requestId;
+    private Long dataRequestId;
     @OneToOne
     private DataRequest dataRequest;
 }

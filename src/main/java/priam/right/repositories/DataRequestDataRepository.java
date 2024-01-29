@@ -19,9 +19,9 @@ public interface DataRequestDataRepository extends JpaRepository<DataRequestData
     List<DataRequestData> findDataRequestDataByDataRequestId(int dataRequestId);
 
 
-    @Query(value= "SELECT answer FROM Data_Request_Data WHERE data_id =:dataId AND data_request_id IN " +
-            "(SELECT request_id FROM data_request WHERE data_subject_id = :dataSubjectId AND issued_at BETWEEN" +
-            "        DATE_SUB(DATE(NOW()), INTERVAL 2 DAY) AND DATE(NOW()) )",
+    @Query(value= "SELECT answer FROM Data_Request_Data WHERE data_id =:dataId AND answer = true AND data_request_id IN " +
+            "(SELECT request_id FROM data_request WHERE data_subject_id = :dataSubjectId AND issued_at > DATE_SUB(DATE(NOW()), INTERVAL 2 DAY))" +
+            "LIMIT 1",
             nativeQuery = true)
     Optional<Boolean> isDataAcceptedByDataSubjectIdAndDataId(int dataSubjectId, int dataId);
 }

@@ -1,20 +1,21 @@
 package priam.right.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
+import priam.right.entities.Data;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @lombok.Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestAnswerRequestDTO {
     private int idAnswer;
-    @Getter
     private boolean answer;
-    private String claimAnswer;
-    private Date claimDate;
+    private String providerClaim;
 
-    private int idDataRequest;
+    private int requestId;
+
+    private List<Data> data = new ArrayList<>();
 }

@@ -29,4 +29,7 @@ public class DataRequest {
     private DataSubject dataSubject;
 
     private boolean response;
+
+    @OneToOne
+    RequestAnswer requestAnswer;
 }

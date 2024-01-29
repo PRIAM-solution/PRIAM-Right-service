@@ -5,9 +5,9 @@ import priam.right.dto.*;
 import priam.right.entities.RequestAnswer;
 import priam.right.enums.DataRequestType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface DataRequestService {
 
@@ -16,16 +16,16 @@ public interface DataRequestService {
     List<DataRequestResponseDTO> getListDataRequestByDataSubjectId(int id);
 
     DataRequestResponseDTO saveDataRequest(DataRequestRequestDTO dataRequestRequestDTO, DataRequestType dataRequestType);
+    DataRequestResponseDTO saveAccessRequest(AccessRequestRequestDTO accessRequestRequestDTO);
 
-    DataRequestResponseDTO RectificationAnswer(int idRequest, boolean answer, String claim);
+    RequestAnswer getRequestAnswer(long requestId);
+    RequestAnswer saveRequestAnswer(RequestAnswerRequestDTO requestAnswerRequestDTO);
 
-    public DataRequestResponseDTO ErasureAnswer(int idDataRequest, boolean answer, String claimAnswer);
     List<DataRequestResponseDTO> getListRectificationRequests();
 
     List<DataRequestResponseDTO> getListErasureRequests();
     List<Map<String, String>> DataAccess(int idDS, String dataTypeName, List<String> attributes);
 
-    DataRequestResponseDTO saveAccessRequest(AccessRequestRequestDTO accessRequestRequestDTO);
 
     boolean isAccepted(int dataSubjectId, int dataId);
 
