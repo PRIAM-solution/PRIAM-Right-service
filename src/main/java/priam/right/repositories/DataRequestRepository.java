@@ -9,11 +9,11 @@ import java.util.List;
 //@Repository
 public interface DataRequestRepository extends JpaRepository<DataRequest, Integer> {
 
-    List<DataRequest> findByDataSubjectId(int DataSubjectId);
+    List<DataRequest> findByDataSubjectId(int dataSubjectId);
 
-    List<DataRequest> findByRequestType(DataRequestType requestType);
+    List<DataRequest> findByDataRequestType(DataRequestType dataRequestType);
 
-    @Query(value = "SELECT * FROM data_request WHERE data_request.request_type IN :types",
+    @Query(value = "SELECT * FROM DataRequest WHERE DataRequest.request_type IN :types",
             nativeQuery = true)
     List<DataRequest> findByTypes(List<String> types);
 }

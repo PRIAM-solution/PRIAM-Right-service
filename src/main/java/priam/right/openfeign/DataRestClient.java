@@ -10,14 +10,14 @@ import java.util.List;
 @FeignClient(name ="DATA-SERVICE")
 public interface DataRestClient {
 
-    @GetMapping(path = "/api/dataId/{attribute}")
-    public int getIdByName(@PathVariable String attribute);
+    @GetMapping(path = "/api/dataId/{dataName}")
+    public int getDataIdByName(@PathVariable String dataName);
 
     @GetMapping(path = "/api//datatype/data/{dataTypeId}")
     public String getDataTypeNameByDataTypeId(@PathVariable int dataTypeId);
 
-    @GetMapping(path = "/api/personalData/{id}")
-    Data getData(@PathVariable(name = "id") int id);
+    @GetMapping(path = "/api/personalData/{dataId}")
+    Data getDataById(@PathVariable int dataId);
 
     @GetMapping(path = "/api/personalDataList")
     List<Data> getListPersonalData();

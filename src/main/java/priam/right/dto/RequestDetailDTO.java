@@ -17,7 +17,7 @@ public class RequestDetailDTO {
     @NoArgsConstructor
     private static class DataListItem {
         private int dataId;
-        private String attributeName;
+        private String dataName;
         private boolean answerByData;
         private Map<String, String> primaryKeys;
     }
@@ -38,15 +38,15 @@ public class RequestDetailDTO {
     @NoArgsConstructor
     public static class DataSubject {
         private int dataSubjectId;
-        private String referenceId;
+        private String idRef;
         private String dataSubjectCategoryName;
     }
 
-    private int requestId;
-    private DataRequestType typeRequest;
-    private String claim;
+    private int dataRequestId;
+    private DataRequestType dataRequestType;
+    private String dataRequestClaim;
     private String newValue;
-    private Date issuedAt;
+    private Date dataRequestIssuedAt;
     private boolean response;
     private boolean isIsolated;
     private DataSubject dataSubject;

@@ -3,7 +3,7 @@ package priam.right.web;
 import org.bouncycastle.cert.ocsp.Req;
 import org.springframework.web.bind.annotation.*;
 import priam.right.dto.*;
-import priam.right.entities.RequestAnswer;
+import priam.right.entities.DataRequestAnswer;
 import priam.right.enums.DataRequestType;
 import priam.right.services.DataRequestService;
 
@@ -33,9 +33,9 @@ public class DataRequestRestController {
         return dataRequestService.getListErasureRequests();
     }
 
-    @GetMapping(path = "right/dataRequest/{id}")
-    public DataRequestResponseDTO getDataRequest(@PathVariable int id) {
-        return dataRequestService.getDataRequest(id);
+    @GetMapping(path = "right/dataRequest/{dataRequestId}")
+    public DataRequestResponseDTO getDataRequest(@PathVariable int dataRequestId) {
+        return dataRequestService.getDataRequest(dataRequestId);
     }
 
     @PostMapping(path = "/right/accessRequest")
@@ -45,33 +45,30 @@ public class DataRequestRestController {
 
     @PostMapping(path = "/right/rectificationRequest")
     public DataRequestResponseDTO saveRectificationRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
-        return dataRequestService.saveDataRequest(dataRequestDTO, DataRequestType.Rectification);
+        return dataRequestService.saveDataRequest(dataRequestDTO, DataRequestType.RECTIFICATION);
     }
 
     @PostMapping(path = "/right/erasureRequest")
     public DataRequestResponseDTO saveErasureRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
-        return dataRequestService.saveDataRequest(dataRequestDTO, DataRequestType.Erasure);
+        return dataRequestService.saveDataRequest(dataRequestDTO, DataRequestType.ERASURE);
     }
 
-    @GetMapping(path = "/right/answer/{requestId}")
-    public RequestAnswer getRequestAnswer(@PathVariable long requestId) {
-        return dataRequestService.getRequestAnswer(requestId);
-    }
     @PostMapping(path = "/right/answer")
-    public RequestAnswer saveRequestAnswer(@RequestBody RequestAnswerRequestDTO requestAnswer) {
+    public DataRequestAnswer saveRequestAnswer(@RequestBody RequestAnswerRequestDTO requestAnswer) {
         return dataRequestService.saveRequestAnswer(requestAnswer);
     }
 
-    @GetMapping(path = "/requestsRectification/{id}")
-    public List<DataRequestResponseDTO> getListDataRequestByDataSubject(@PathVariable(name = "id") int dataSubjectId) {
+    @GetMapping(path = "/requestsRectification/{dataSubjectId}")
+    public List<DataRequestResponseDTO> getListDataRequestByDataSubject(@PathVariable int dataSubjectId) {
         return dataRequestService.getListDataRequestByDataSubjectId(dataSubjectId);
     }
 
     @GetMapping(path = "/personalDataValues/accessRight")
-    public List<Map<String, String>> DataAccess(@RequestParam int idDS, @RequestParam String dataTypeName, @RequestParam List<String> attributes) {
-        System.out.println("recupération c bn "+idDS+dataTypeName+attributes);
-        return dataRequestService.DataAccess(idDS,dataTypeName,attributes);
+    public List<Map<String, String>> DataAccess(@RequestParam int dataSubjectId, @RequestParam String dataTypeName, @RequestParam List<String> attributes) {
+        System.out.println("recupération c bn " + dataSubjectId + dataTypeName + attributes);
+        return dataRequestService.DataAccess(dataSubjectId, dataTypeName, attributes);
     }
+
     @GetMapping(path = "/isAccepted")
     public boolean isDataRequestAcceptedForDataId(@RequestParam int dataSubjectId, @RequestParam int dataId) {
         return dataRequestService.isAccepted(dataSubjectId, dataId);
@@ -82,13 +79,13 @@ public class DataRequestRestController {
         return dataRequestService.getDataRequestByFilters(listOfSelectedTypeDataRequests.orElse(new ArrayList<>()), listOfSelectedStatus.orElse(new ArrayList<>()), listOfSelectedDataSubjectCategories.orElse(new ArrayList<>()));
     }
 
-    @GetMapping(path = "right/requestDetail/{requestId}")
-    public RequestDetailDTO getRequestDetail(@PathVariable int requestId) {
-        return dataRequestService.getRequestDataDetail(requestId);
+    @GetMapping(path = "right/requestDetail/{dataRequestId}")
+    public RequestDetailDTO getRequestDetail(@PathVariable int dataRequestId) {
+        return dataRequestService.getRequestDataDetail(dataRequestId);
     }
 
-    @GetMapping(path = "right/answerOfRequest/{requestId}")
-    public RequestAnswer getRequestAnswer(@PathVariable int requestId) {
-        return dataRequestService.getRequestAnswerByDataRequestId(requestId);
+    @GetMapping(path = "right/answerOfRequest/{dataRequestId}")
+    public DataRequestAnswer getRequestAnswer(@PathVariable int dataRequestId) {
+        return dataRequestService.getRequestAnswerByDataRequestId(dataRequestId);
     }
 }
