@@ -17,6 +17,7 @@ public class DataRequestAnswer {
     private AnswerType answer;
     private String dataRequestClaim;
 //    private Date claimDate; //TODO: remove
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "data_request_id")
     private DataRequest dataRequest;
 }

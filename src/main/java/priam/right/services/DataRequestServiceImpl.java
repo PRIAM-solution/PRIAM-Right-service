@@ -214,7 +214,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         DataRequest dataRequest = dataRequestRepository.getById(requestAnswerRequestDTO.getDataRequestId());
 
         DataRequestAnswer requestAnswer = new DataRequestAnswer();
-        requestAnswer.setDataRequestAnswerId(requestAnswerRequestDTO.getDataRequestId());
+        requestAnswer.setDataRequest(dataRequest);
         requestAnswer.setDataRequestClaim(requestAnswerRequestDTO.getProviderClaim());
 
         ArrayList<DataRequestData> drdList = new ArrayList<>(dataRequestDataRepository.findDataRequestDataByDataRequestId(requestAnswerRequestDTO.getDataRequestId()));
@@ -281,7 +281,6 @@ public class DataRequestServiceImpl implements DataRequestService {
 
     @Override
     public boolean isAccepted(int dataSubjectId, int dataId) {
-        System.out.println(dataId);
         Optional<Boolean> isAccepted = dataRequestDataRepository.isDataAcceptedByDataSubjectIdAndDataId(dataSubjectId, dataId);
         return isAccepted.orElse(false);
     }
@@ -296,7 +295,8 @@ public class DataRequestServiceImpl implements DataRequestService {
         }
         else {
             filteredTypeList = new ArrayList<>();
-            filteredTypeList = dataRequestRepository.findByTypes(listOfSelectedTypeDataRequests);
+            ArrayList<Integer> indexOfEnumType = new ArrayList<>(listOfSelectedTypeDataRequests.stream().map(type ->DataRequestType.valueOf(type).ordinal()).toList());
+            filteredTypeList = dataRequestRepository.findByTypes(indexOfEnumType);
         }
 
         // Filter with status of DataRequest

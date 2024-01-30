@@ -12,15 +12,15 @@ import java.util.Optional;
 //@Repository
 public interface DataRequestDataRepository extends JpaRepository<DataRequestData, Integer> {
 
-    @Query(value = "SELECT data_id FROM DataRequest_Data WHERE data_request_id = :dataRequestId",
+    @Query(value = "SELECT data_id FROM Data_Request_Data WHERE data_request_id = :dataRequestId",
             nativeQuery = true)
     List<Integer> findDataIdsByDataRequestId(int dataRequestId);
 
     List<DataRequestData> findDataRequestDataByDataRequestId(int dataRequestId);
 
-    @Query(value= "SELECT answer_by_data FROM DataRequest_Data WHERE data_id =:dataId AND answer = true AND data_request_id IN " +
-            "(SELECT data_request_id FROM DataRequest WHERE data_subject_id = :dataSubjectId " +// AND data_request_issued_at > DATE_SUB(DATE(NOW()), INTERVAL 2 DAY))" +
-            "LIMIT 1)",
+    @Query(value= "SELECT answer_by_data FROM Data_Request_Data WHERE data_id =:dataId AND answer_by_data = true AND data_request_id IN " +
+            "(SELECT data_request_id FROM Data_Request WHERE data_subject_id = :dataSubjectId) " +// AND data_request_issued_at > DATE_SUB(DATE(NOW()), INTERVAL 2 DAY))" +
+            "LIMIT 1",
             nativeQuery = true)
     Optional<Boolean> isDataAcceptedByDataSubjectIdAndDataId(int dataSubjectId, int dataId);
 }
