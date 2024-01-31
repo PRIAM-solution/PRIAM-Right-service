@@ -1,5 +1,6 @@
 package priam.right.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import priam.right.enums.AnswerType;
@@ -17,7 +18,8 @@ public class DataRequestAnswer {
     private AnswerType answer;
     private String dataRequestClaim;
 //    private Date claimDate; //TODO: remove
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
+    @JsonBackReference
     @JoinColumn(name = "data_request_id")
     private DataRequest dataRequest;
 }

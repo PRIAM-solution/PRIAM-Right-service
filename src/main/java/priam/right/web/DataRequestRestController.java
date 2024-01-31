@@ -23,16 +23,6 @@ public class DataRequestRestController {
         this.dataRequestService = dataRequestService;
     }
 
-    @GetMapping(path = "/requestsRectification")
-    public List<DataRequestResponseDTO> getListRequests() {
-        return dataRequestService.getListRectificationRequests();
-    }
-
-    @GetMapping(path = "/requestsErasure")
-    public List<DataRequestResponseDTO> getListErasureRequests() {
-        return dataRequestService.getListErasureRequests();
-    }
-
     @GetMapping(path = "right/dataRequest/{dataRequestId}")
     public DataRequestResponseDTO getDataRequest(@PathVariable int dataRequestId) {
         return dataRequestService.getDataRequest(dataRequestId);
@@ -55,7 +45,8 @@ public class DataRequestRestController {
 
     @PostMapping(path = "/right/answer")
     public DataRequestAnswer saveRequestAnswer(@RequestBody RequestAnswerRequestDTO requestAnswer) {
-        return dataRequestService.saveRequestAnswer(requestAnswer);
+        DataRequestAnswer d = dataRequestService.saveRequestAnswer(requestAnswer);
+        return d;
     }
 
     @GetMapping(path = "right/answer/{dataRequestId}")

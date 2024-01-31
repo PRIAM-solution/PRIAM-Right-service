@@ -19,9 +19,6 @@ public interface DataRequestService {
 
     DataRequestAnswer saveRequestAnswer(RequestAnswerRequestDTO requestAnswerRequestDTO);
 
-    List<DataRequestResponseDTO> getListRectificationRequests();
-
-    List<DataRequestResponseDTO> getListErasureRequests();
     List<Map<String, String>> DataAccess(int dataSubjectId, String dataTypeName, List<String> attributes);
 
 

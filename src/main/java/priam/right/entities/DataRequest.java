@@ -28,7 +28,6 @@ public class DataRequest {
     private boolean isIsolated;
     private boolean response;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "data_request_answer_id")
-    DataRequestAnswer requestAnswer;
+    @OneToOne(mappedBy = "dataRequest")
+    private DataRequestAnswer requestAnswer;
 }

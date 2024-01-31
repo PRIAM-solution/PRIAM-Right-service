@@ -6,5 +6,5 @@ import priam.right.entities.DataRequestAnswer;
 import java.util.Optional;
 
 public interface RequestAnswerRepository extends JpaRepository<DataRequestAnswer, Integer> {
-    Optional<DataRequestAnswer> findDataRequestAnswerByDataRequestAnswerId(int requestId);
+    Optional<DataRequestAnswer> findDataRequestAnswerByDataRequest_DataRequestId(int requestId);
 }
