@@ -14,8 +14,6 @@ public class DataSubject {
     @Id
     private int dataSubjectId;
     private String idRef;
-    private String username;
-    private String password;
     private int age;
 
     @ManyToOne
