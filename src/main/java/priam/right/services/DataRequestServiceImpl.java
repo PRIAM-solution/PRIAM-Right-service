@@ -39,10 +39,22 @@ public class DataRequestServiceImpl implements DataRequestService {
     private DataRequestDataRepository dataRequestDataRepository;
     private DataRequestPrimaryKeyRepository dataRequestPrimaryKeyRepository;
 
+    /**
+     * Retrieve the values of attributes of a dataType by a DataSubject ID
+     * @param dataSubjectId ID of the DataSubject
+     * @param dataTypeName Name of the DataType of the attributes
+     * @param attributes List of attribute name
+     * @return List of Map with the form <value, the value>
+     */
     public List<Map<String, String>> DataAccess(int dataSubjectId, String dataTypeName, List<String> attributes){
         return providerRestClient.getPersonalDataValues(dataSubjectId, dataTypeName, attributes);
     }
 
+    /**
+     * Save a new erasure OR rectification DataRequest
+     * @param dataRequestDTO A dataRequestDTO object
+     * @return A DataRequestResponseDTO object
+     */
     @Override
     public DataRequestResponseDTO saveDataRequest(DataRequestRequestDTO dataRequestDTO, DataRequestType dataRequestType) {
         DataRequest dataRequest = new DataRequest();
@@ -82,6 +94,11 @@ public class DataRequestServiceImpl implements DataRequestService {
         return response;
     }
 
+    /**
+     * Save a new access DataRequest
+     * @param accessRequestRequestDTO A AccessRequestRequestDTO object
+     * @return A DataRequestResponseDTO object
+     */
     @Override
     public DataRequestResponseDTO saveAccessRequest(AccessRequestRequestDTO accessRequestRequestDTO) {
         DataRequest dataRequest = new DataRequest();
@@ -113,6 +130,11 @@ public class DataRequestServiceImpl implements DataRequestService {
         return response;
     }
 
+    /**
+     * Retrieve a DataRequest object based on its ID
+     * @param dataRequestId ID of the DataRequest
+     * @return The DataRequest object
+     */
     @Override
     public DataRequestResponseDTO getDataRequest(int dataRequestId) {
         DataRequest dataRequest = dataRequestRepository.getById(dataRequestId);
@@ -133,6 +155,11 @@ public class DataRequestServiceImpl implements DataRequestService {
         return response;
     }
 
+    /**
+     * Retrieve the list of DataRequest of a DataSubject by its ID
+     * @param dataSubjectId ID of the DataSubject
+     * @return A DataRequestResponseDTO object List
+     */
     @Override
     public List<DataRequestResponseDTO> getListDataRequestByDataSubjectId(int dataSubjectId) {
         List<DataRequestResponseDTO> response = new ArrayList<>();
@@ -157,6 +184,11 @@ public class DataRequestServiceImpl implements DataRequestService {
         return response;
     }
 
+    /**
+     * Save a new DataRequestAnswer
+     * @param requestAnswer A RequestAnswerRequestDTO object
+     * @return The created DataRequestAnswer object
+     */
     @Override
     public DataRequestAnswer saveRequestAnswer(RequestAnswerRequestDTO requestAnswerRequestDTO) {
         DataRequest dataRequest = dataRequestRepository.getById(requestAnswerRequestDTO.getDataRequestId());
@@ -231,12 +263,25 @@ public class DataRequestServiceImpl implements DataRequestService {
         return requestAnswerRepository.save(requestAnswer);
     }
 
+    /**
+     * Retrieve the status of a data, if it had been recently accepted in a Access Request or not for a specific DataSubject
+     * @param dataSubjectId ID of the DataSubject
+     * @param dataId ID of the Data
+     * @return A boolean
+     */
     @Override
     public boolean isAccepted(int dataSubjectId, int dataId) {
         Optional<Boolean> isAccepted = dataRequestDataRepository.isDataAcceptedByDataSubjectIdAndDataId(dataSubjectId, dataId);
         return isAccepted.orElse(false);
     }
 
+    /**
+     * Retrieve a list of DataRequest based on filters
+     * @param listOfSelectedTypeDataRequests List of String
+     * @param listOfSelectedStatus List of String
+     * @param listOfSelectedDataSubjectCategories List of String
+     * @return A RequestListDTO object List
+     */
     @Override
     public List<RequestListDTO> getDataRequestByFilters(List<String> listOfSelectedTypeDataRequests, List<String> listOfSelectedStatus, List<String> listOfSelectedDataSubjectCategories) {
         List<RequestListDTO> response = new ArrayList<>();
@@ -300,6 +345,11 @@ public class DataRequestServiceImpl implements DataRequestService {
         return response;
     }
 
+    /**
+     * Retrieve information on a DataRequest based on its ID
+     * @param dataRequestId ID of the DataRequest
+     * @return A RequestDetailDTO object
+     */
     @Override
     public RequestDetailDTO getRequestDataDetail(int dataRequestId) {
         RequestDetailDTO response = new RequestDetailDTO();
@@ -340,6 +390,11 @@ public class DataRequestServiceImpl implements DataRequestService {
         return response;
     }
 
+    /**
+     * Retrieve a DataRequestAnswer object based on its ID
+     * @param dataRequestId The DataRequest ID
+     * @return The DataRequestAnswer object
+     */
     @Override
     public DataRequestAnswer getRequestAnswerByDataRequestId(int requestId) {
         Optional<DataRequestAnswer> res = requestAnswerRepository.findDataRequestAnswerByDataRequest_DataRequestId(requestId);
