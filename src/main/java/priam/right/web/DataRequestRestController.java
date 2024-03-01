@@ -1,12 +1,15 @@
 package priam.right.web;
 
 import org.bouncycastle.cert.ocsp.Req;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import priam.right.dto.*;
 import priam.right.entities.DataRequestAnswer;
 import priam.right.enums.DataRequestType;
 import priam.right.services.DataRequestService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +21,32 @@ import java.util.Optional;
 @RequestMapping(path = "/api", produces = "application/json")
 public class DataRequestRestController {
     private final DataRequestService dataRequestService;
+    @Autowired
+    HttpServletRequest request;
 
     public DataRequestRestController(DataRequestService dataRequestService) {
         this.dataRequestService = dataRequestService;
     }
 
     /**
+     * Adds the original URL of the request to the session.
+     * <p>
+     * This method is annotated with {@literal @}ModelAttribute, which ensures
+     * that it is invoked before handling any request mapping method in this
+     * controller. It sets the 'originalUrl' attribute in the session to the
+     * request's URI. This attribute can be used to track the original URL
+     * requested by the user before any redirection or processing occurs.
+     *
+     * @param session the HTTP session to which the original URL attribute is added
+     */
+    @ModelAttribute
+    public void addOriginalUrlToSession(HttpSession session) {
+        session.setAttribute("originalUrl", request.getRequestURI());
+    }
+
+    /**
      * Retrieve a DataRequest object based on its ID
+     *
      * @param dataRequestId ID of the DataRequest
      * @return The DataRequest object
      */
@@ -32,8 +54,10 @@ public class DataRequestRestController {
     public DataRequestResponseDTO getDataRequest(@PathVariable int dataRequestId) {
         return dataRequestService.getDataRequest(dataRequestId);
     }
+
     /**
      * Save a new access DataRequest
+     *
      * @param accessRequestRequestDTO A AccessRequestRequestDTO object
      * @return A DataRequestResponseDTO object
      */
@@ -41,8 +65,10 @@ public class DataRequestRestController {
     public DataRequestResponseDTO saveAccessRequest(@RequestBody AccessRequestRequestDTO accessRequestRequestDTO) {
         return dataRequestService.saveAccessRequest(accessRequestRequestDTO);
     }
+
     /**
      * Save a new rectification DataRequest
+     *
      * @param dataRequestDTO A dataRequestDTO object
      * @return A DataRequestResponseDTO object
      */
@@ -50,8 +76,10 @@ public class DataRequestRestController {
     public DataRequestResponseDTO saveRectificationRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
         return dataRequestService.saveDataRequest(dataRequestDTO, DataRequestType.RECTIFICATION);
     }
+
     /**
      * Save a new erasure DataRequest
+     *
      * @param dataRequestDTO A dataRequestDTO object
      * @return A DataRequestResponseDTO object
      */
@@ -59,8 +87,10 @@ public class DataRequestRestController {
     public DataRequestResponseDTO saveErasureRequest(@RequestBody DataRequestRequestDTO dataRequestDTO) {
         return dataRequestService.saveDataRequest(dataRequestDTO, DataRequestType.ERASURE);
     }
+
     /**
      * Save a new DataRequestAnswer
+     *
      * @param requestAnswer A RequestAnswerRequestDTO object
      * @return The created DataRequestAnswer object
      */
@@ -68,8 +98,10 @@ public class DataRequestRestController {
     public DataRequestAnswer saveRequestAnswer(@RequestBody RequestAnswerRequestDTO requestAnswer) {
         return dataRequestService.saveRequestAnswer(requestAnswer);
     }
+
     /**
      * Retrieve a DataRequestAnswer object based on its ID
+     *
      * @param dataRequestId The DataRequest ID
      * @return The DataRequestAnswer object
      */
@@ -80,6 +112,7 @@ public class DataRequestRestController {
 
     /**
      * Retrieve the list of DataRequest of a DataSubject by its ID
+     *
      * @param dataSubjectId ID of the DataSubject
      * @return A DataRequestResponseDTO object List
      */
@@ -90,9 +123,10 @@ public class DataRequestRestController {
 
     /**
      * Retrieve the values of attributes of a dataType by a DataSubject ID
+     *
      * @param dataSubjectId ID of the DataSubject
-     * @param dataTypeName Name of the DataType of the attributes
-     * @param attributes List of attribute name
+     * @param dataTypeName  Name of the DataType of the attributes
+     * @param attributes    List of attribute name
      * @return List of Map with the form <value, the value>
      */
     @GetMapping(path = "/personalDataValues/accessRight")
@@ -103,8 +137,9 @@ public class DataRequestRestController {
 
     /**
      * Retrieve the status of a data, if it had been recently accepted in a Access Request or not for a specific DataSubject
+     *
      * @param dataSubjectId ID of the DataSubject
-     * @param dataId ID of the Data
+     * @param dataId        ID of the Data
      * @return A boolean
      */
     @GetMapping(path = "/isAccepted")
@@ -114,8 +149,9 @@ public class DataRequestRestController {
 
     /**
      * Retrieve a list of DataRequest based on filters
-     * @param listOfSelectedTypeDataRequests List of String
-     * @param listOfSelectedStatus List of String
+     *
+     * @param listOfSelectedTypeDataRequests      List of String
+     * @param listOfSelectedStatus                List of String
      * @param listOfSelectedDataSubjectCategories List of String
      * @return A RequestListDTO object List
      */
@@ -126,6 +162,7 @@ public class DataRequestRestController {
 
     /**
      * Retrieve information on a DataRequest based on its ID
+     *
      * @param dataRequestId ID of the DataRequest
      * @return A RequestDetailDTO object
      */
