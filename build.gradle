@@ -5,7 +5,7 @@ plugins {
     id 'org.springdoc.openapi-gradle-plugin' version '1.3.4'
 }
 
-group = 'priam.dataRequest'
+group = 'priam.right'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
