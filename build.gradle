@@ -7,7 +7,7 @@ plugins {
 
 group = 'priam.right'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = "1.9"
 
 configurations {
     compileOnly {
@@ -36,8 +36,13 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     runtimeOnly 'mysql:mysql-connector-java'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // https://mavenlibs.com/maven/dependency/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
-    //implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.keycloak:keycloak-spring-boot-starter:24.0.3'
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.security.oauth:spring-security-oauth2'
+    implementation 'org.springframework.security.oauth:spring-security-oauth2:2.3.7.RELEASE'
+    implementation 'org.springframework.security:spring-security-oauth2-client'
 }
 
 dependencyManagement {
@@ -49,3 +54,4 @@ dependencyManagement {
 tasks.named('test') {
     useJUnitPlatform()
 }
+targetCompatibility = JavaVersion.VERSION_1_9

@@ -20,6 +20,7 @@ import priam.right.repositories.RequestAnswerRepository;
 import javax.annotation.Generated;
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Generated(
         value = "org.mapstruct.ap.MappingProcessor",
@@ -239,7 +240,7 @@ public class DataRequestServiceImpl implements DataRequestService {
             }
         }
         else if (dataRequest.getDataRequestType().equals(DataRequestType.ACCESS)) {
-            List<Integer> dataIdList = requestAnswerRequestDTO.getData().stream().map(d -> d.getDataId()).toList();
+            List<Integer> dataIdList = requestAnswerRequestDTO.getData().stream().map(d -> d.getDataId()).collect(Collectors.toList());
             // We look if the dataRequestData is present in the datas send in the request
             drdList.forEach(drd -> {
                 if(dataIdList.contains(drd.getDataId())) {
@@ -292,7 +293,7 @@ public class DataRequestServiceImpl implements DataRequestService {
         }
         else {
             filteredTypeList = new ArrayList<>();
-            ArrayList<Integer> indexOfEnumType = new ArrayList<>(listOfSelectedTypeDataRequests.stream().map(type ->DataRequestType.valueOf(type).ordinal()).toList());
+            ArrayList<Integer> indexOfEnumType = new ArrayList<>(listOfSelectedTypeDataRequests.stream().map(type ->DataRequestType.valueOf(type).ordinal()).collect(Collectors.toList()));
             filteredTypeList = dataRequestRepository.findByTypes(indexOfEnumType);
         }
 

@@ -1,13 +1,18 @@
 package priam.right.openfeign;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.FeignClientProperties;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import priam.right.entities.Data;
 
-import java.util.List;
+import priam.right.security.FeignClientConfiguration;
 
-@FeignClient(name ="DATA-SERVICE")
+import java.util.List;
+@FeignClient(name = "DATA-SERVICE",
+        url = "http://localhost:8081",
+        configuration = FeignClientConfiguration.class)
+//@FeignClient(name ="DATA-SERVICE")
 public interface DataRestClient {
 
     @GetMapping(path = "/api/dataId/{dataName}")
