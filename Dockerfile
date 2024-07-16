@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1.4.0
 # Options
 ## La version de l'application (le .jar)
 ARG APP_VERSION="0.0.1-SNAPSHOT" 
@@ -5,14 +6,31 @@ ARG APP_VERSION="0.0.1-SNAPSHOT"
 ARG GRADLE_VERSION="8.7"
 ## La version du java-runtime
 ARG JRE_VERSION="17"
+## Pour les feignClient
+ARG DATA_SERVICE_URL="http://localhost:8081"
+ARG ACTOR_SERVICE_URL="http://localhost:8082"
+ARG PROVIDER_SERVICE_URL="http://localhost"
+
 
 # Image qui va créer le .jar
-FROM gradle:${GRADLE_VERSION} as builder
+FROM gradle:${GRADLE_VERSION} AS builder
 
 WORKDIR /app
 
 # On copie tout ce qu'on a
 COPY . /app
+
+RUN <<EOF
+    echo "
+    package priam.right.openfeign;
+
+    public class Environment { 
+        protected static final String data_url = \"${DATA_SERVICE_URL}\";
+        protected static final String actor_url = \"${ACTOR_SERVICE_URL}\";
+        protected static final String provider_service_url = \"${PROVIDER_SERVICE_URL}\";
+    }
+      " > /app/src/main/java/priam/right/openfeign/Environment.java
+EOF
 
 # Build le .jar
 RUN gradle assemble
